@@ -1,26 +1,23 @@
 import { useEffect, useState } from 'react'
-
-const KEY = 'rosanatv_eps'
-
-function load() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) || '[]')
-  } catch {
-    return []
-  }
-}
+import {
+  addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp,
+} from 'firebase/firestore'
+import { db } from '../firebase'
 
 export default function useEpisodes() {
-  const [eps, setEps] = useState(load)
+  const [eps, setEps] = useState([])
 
   useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(eps))
-    } catch {}
-  }, [eps])
+    const q = query(collection(db, 'episodios'), orderBy('creado', 'asc'))
+    return onSnapshot(
+      q,
+      (snap) => setEps(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (err) => console.error('Firestore:', err)
+    )
+  }, [])
 
-  const add = (ep) => setEps((list) => [...list, ep])
-  const remove = (index) => setEps((list) => list.filter((_, i) => i !== index))
+  const add = (ep) => addDoc(collection(db, 'episodios'), { ...ep, creado: serverTimestamp() })
+  const remove = (id) => deleteDoc(doc(db, 'episodios', id))
 
   return { eps, add, remove }
 }

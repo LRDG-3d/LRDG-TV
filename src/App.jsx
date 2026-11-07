@@ -4,7 +4,11 @@ import Empty from './components/Empty.jsx'
 import EpisodeCard from './components/EpisodeCard.jsx'
 import Calendar from './components/Calendar.jsx'
 import AddModal from './components/AddModal.jsx'
+import LoginModal from './components/LoginModal.jsx'
 import useEpisodes from './hooks/useEpisodes.js'
+import useAdmin from './hooks/useAdmin.js'
+import { signOut } from 'firebase/auth'
+import { auth } from './firebase'
 
 const NAV = [
   { id: 'inicio', icon: 'home', label: 'Inicio' },
@@ -16,6 +20,8 @@ const NAV = [
 
 export default function App() {
   const { eps, add, remove } = useEpisodes()
+  const user = useAdmin()
+  const [loginOpen, setLoginOpen] = useState(false)
   const [view, setView] = useState('inicio')
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -33,7 +39,7 @@ export default function App() {
 
   const list = (arr) =>
     arr.map((x, k) => (
-      <EpisodeCard key={x.i} ep={x.ep} isNew={k === 0 && !query} onDelete={() => remove(x.i)} />
+      <EpisodeCard key={x.ep.id} ep={x.ep} isNew={k === 0 && !query} canDelete={!!user} onDelete={() => remove(x.ep.id)} />
     ))
 
   const section = NAV.find((n) => n.id === view)
@@ -43,6 +49,9 @@ export default function App() {
       <header className="top">
         <div className="av"><Icon name="rose" /></div>
         <div className="brand">LA <b>ROSANA</b> TV</div>
+        <button className="adm" onClick={() => (user ? signOut(auth) : setLoginOpen(true))}>
+          {user ? 'Salir' : 'Admin'}
+        </button>
         <button className="ic" aria-label="Buscar" onClick={() => setSearchOpen(!searchOpen)}>
           <Icon name="search" />
         </button>
@@ -90,7 +99,9 @@ export default function App() {
         )}
       </main>
 
-      <button className="fab" aria-label="Agregar capítulo" onClick={() => setModal(true)}>+</button>
+      {user && (
+        <button className="fab" aria-label="Agregar capítulo" onClick={() => setModal(true)}>+</button>
+      )}
 
       <nav>
         {NAV.map((n) => (
@@ -104,12 +115,17 @@ export default function App() {
         open={modal}
         nextEpisode={eps.length + 1}
         onClose={() => setModal(false)}
-        onSave={(ep) => {
-          add(ep)
-          setModal(false)
-          go('inicio')
+        onSave={async (ep) => {
+          try {
+            await add(ep)
+            setModal(false)
+            go('inicio')
+          } catch {
+            alert('No se pudo guardar. Revisa que hayas iniciado sesión con el correo admin.')
+          }
         }}
       />
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   )
 }

@@ -43,3 +43,6 @@ nav button.on{background:var(--onbg)}
 .row{display:flex;gap:10px}
 .btn{flex:1;padding:13px;border-radius:14px;border:0;font:700 15px inherit;font-family:inherit;cursor:pointer;color:var(--tx);background:linear-gradient(135deg,var(--ac),var(--ac2))}
 .btn.g{background:var(--onbg)}
+.adm{background:var(--onbg);color:var(--tx);border:0;border-radius:20px;padding:8px 14px;font:600 13px inherit;font-family:inherit;cursor:pointer}
+.err{color:#f87171;font-size:14px;margin:0 0 10px}
+.btn:disabled{opacity:.6}

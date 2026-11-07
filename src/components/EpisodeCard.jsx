@@ -1,6 +1,6 @@
 import Icon from './Icon.jsx'
 
-export default function EpisodeCard({ ep, isNew, onOpen, onDelete }) {
+export default function EpisodeCard({ ep, isNew, canDelete, onDelete }) {
   const code = `T${ep.s || 1}E${String(ep.e || 1).padStart(2, '0')}`
 
   return (
@@ -14,6 +14,7 @@ export default function EpisodeCard({ ep, isNew, onOpen, onDelete }) {
         <b>{ep.t}</b>
         <span>{code}</span>
       </div>
+      {canDelete && (
       <button
         className="dots"
         aria-label="Eliminar capítulo"
@@ -24,6 +25,7 @@ export default function EpisodeCard({ ep, isNew, onOpen, onDelete }) {
       >
         ⋮
       </button>
+      )}
     </div>
   )
 }

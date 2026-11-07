@@ -1,21 +1,19 @@
 # LA ROSANA TV
 
-Página de streaming hecha con React + Vite. Empieza vacía, sin capítulos de ejemplo.
+React + Vite + Firebase (Authentication y Firestore). Empieza vacía.
 
 ## Uso
-
 ```bash
 npm install
-npm run dev      # servidor de desarrollo
-npm run build    # genera la carpeta dist
-npm run preview  # prueba la versión final
+npm run dev
+npm run build
 ```
 
-Requiere Node.js 18 o superior.
+## Firebase (proyecto lrdg-tv)
+1. Authentication -> Sign-in method -> activa Correo electrónico/contraseña.
+2. Authentication -> Usuarios -> agrega tu usuario admin.
+3. Firestore Database -> crea la base de datos.
+4. Firestore -> Reglas -> pega el contenido de `firestore.rules` (con tu correo) y publica.
+5. Authentication -> Configuración -> Dominios autorizados -> agrega el dominio donde publiques la página.
 
-## Estructura
-
-- `src/App.jsx`: pantallas y navegación inferior
-- `src/components/`: tarjeta de capítulo, calendario, formulario, íconos
-- `src/hooks/useEpisodes.js`: guarda los capítulos en el navegador (localStorage)
-- `src/styles.css`: colores y estilos (modo claro y oscuro)
+Los capítulos se guardan en la colección `episodios`. Solo el correo admin de las reglas puede agregar o borrar.
