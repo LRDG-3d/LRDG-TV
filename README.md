@@ -17,3 +17,11 @@ npm run build
 5. Authentication -> Configuración -> Dominios autorizados -> agrega el dominio donde publiques la página.
 
 Los capítulos se guardan en la colección `episodios`. Solo el correo admin de las reglas puede agregar o borrar.
+
+## Panel de administrador
+Entra a `https://lrdg-3d.github.io/LRDG-TV/#/admin`, inicia sesión y podrás agregar y borrar capítulos.
+Los visitantes no ven ningún botón de administrador.
+
+## Publicación
+El archivo `.github/workflows/deploy.yml` publica la página en GitHub Pages en cada push a `main`
+(Settings -> Pages -> Source: GitHub Actions).

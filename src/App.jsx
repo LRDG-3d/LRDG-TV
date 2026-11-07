@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { signOut } from 'firebase/auth'
+import { auth } from './firebase'
 import Icon from './components/Icon.jsx'
 import Empty from './components/Empty.jsx'
 import EpisodeCard from './components/EpisodeCard.jsx'
@@ -7,8 +9,7 @@ import AddModal from './components/AddModal.jsx'
 import LoginModal from './components/LoginModal.jsx'
 import useEpisodes from './hooks/useEpisodes.js'
 import useAdmin from './hooks/useAdmin.js'
-import { signOut } from 'firebase/auth'
-import { auth } from './firebase'
+import useHash from './hooks/useHash.js'
 
 const NAV = [
   { id: 'inicio', icon: 'home', label: 'Inicio' },
@@ -21,15 +22,23 @@ const NAV = [
 export default function App() {
   const { eps, add, remove } = useEpisodes()
   const user = useAdmin()
-  const [loginOpen, setLoginOpen] = useState(false)
+  const hash = useHash()
   const [view, setView] = useState('inicio')
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [modal, setModal] = useState(false)
 
+  // El panel de admin vive en #/admin
+  const adminRoute = hash === '#/admin'
+  const isAdmin = adminRoute && !!user
+  const loginOpen = adminRoute && user === null
+
   const go = (id) => {
     setView(id)
     window.scrollTo(0, 0)
+  }
+  const leaveAdmin = () => {
+    window.location.hash = '#/'
   }
 
   const items = eps
@@ -39,7 +48,13 @@ export default function App() {
 
   const list = (arr) =>
     arr.map((x, k) => (
-      <EpisodeCard key={x.ep.id} ep={x.ep} isNew={k === 0 && !query} canDelete={!!user} onDelete={() => remove(x.ep.id)} />
+      <EpisodeCard
+        key={x.ep.id}
+        ep={x.ep}
+        isNew={k === 0 && !query}
+        canDelete={isAdmin}
+        onDelete={() => remove(x.ep.id)}
+      />
     ))
 
   const section = NAV.find((n) => n.id === view)
@@ -49,13 +64,15 @@ export default function App() {
       <header className="top">
         <div className="av"><Icon name="rose" /></div>
         <div className="brand">LA <b>ROSANA</b> TV</div>
-        <button className="adm" onClick={() => (user ? signOut(auth) : setLoginOpen(true))}>
-          {user ? 'Salir' : 'Admin'}
-        </button>
+        {isAdmin && (
+          <button className="adm" onClick={() => signOut(auth).then(leaveAdmin)}>Salir</button>
+        )}
         <button className="ic" aria-label="Buscar" onClick={() => setSearchOpen(!searchOpen)}>
           <Icon name="search" />
         </button>
       </header>
+
+      {isAdmin && <p className="adminbar">Modo administrador: puedes agregar y borrar capítulos.</p>}
 
       {searchOpen && (
         <input
@@ -78,7 +95,10 @@ export default function App() {
               <button className="more" aria-label="Ver todos" onClick={() => go('capitulos')}>›</button>
             </h2>
             {items.length ? list(items.slice(0, 6)) : (
-              <Empty icon="rose">Aún no hay capítulos.<br />Toca el botón + para agregar el primero.</Empty>
+              <Empty icon="rose">
+                Aún no hay capítulos.
+                {isAdmin && <><br />Toca el botón + para agregar el primero.</>}
+              </Empty>
             )}
             <Calendar />
           </>
@@ -99,7 +119,7 @@ export default function App() {
         )}
       </main>
 
-      {user && (
+      {isAdmin && (
         <button className="fab" aria-label="Agregar capítulo" onClick={() => setModal(true)}>+</button>
       )}
 
@@ -125,7 +145,7 @@ export default function App() {
           }
         }}
       />
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginModal open={loginOpen} onClose={leaveAdmin} />
     </>
   )
 }

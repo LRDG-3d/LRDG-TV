@@ -16,7 +16,6 @@ export default function LoginModal({ open, onClose }) {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), pass)
       setPass('')
-      onClose()
     } catch {
       setError('Correo o contraseña incorrectos.')
     }
