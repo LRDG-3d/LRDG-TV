@@ -19,7 +19,7 @@ npm run build
 Los capítulos se guardan en la colección `episodios`. Solo el correo admin de las reglas puede agregar o borrar.
 
 ## Panel de administrador
-Entra a `https://lrdg-3d.github.io/LRDG-TV/#/admin`, inicia sesión y podrás agregar y borrar capítulos.
+Entra a `https://lrdg-3d.github.io/LRDG-TV/#/admin` e inicia sesión. Se abre un panel con menú lateral: Resumen, Temporadas, Capítulos y Estrenos, donde puedes agregar y borrar.
 Los visitantes no ven ningún botón de administrador.
 
 ## Publicación

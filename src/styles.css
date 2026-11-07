@@ -110,3 +110,23 @@ nav button:active .nav-ico{transform:scale(.85)}
 .act:active{transform:scale(.97)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Panel de administrador */
+@keyframes slideIn{from{transform:translateX(-100%)}to{transform:none}}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:30;animation:fade .2s}
+.drawer{position:absolute;left:0;top:0;bottom:0;width:min(80%,320px);background:var(--boxbg);border-right:1px solid var(--line);padding:calc(18px + env(safe-area-inset-top,0px)) 14px 18px;overflow-y:auto;animation:slideIn .3s cubic-bezier(.2,.8,.2,1)}
+.dh{display:flex;gap:12px;align-items:center;margin:0 6px 18px}
+.dh small{display:block;color:var(--mut);font-size:13px}
+.mi{display:flex;gap:12px;align-items:center;width:100%;padding:14px;border:0;border-radius:14px;background:none;color:var(--tx);font:600 15px inherit;cursor:pointer;margin-bottom:4px;text-align:left;animation:rise .4s backwards;animation-delay:calc(var(--i,0) * 60ms);transition:background .2s}
+.mi .ico{font-size:22px}
+.mi:hover{background:var(--onbg)}
+.mi.on{background:linear-gradient(135deg,var(--ac),var(--ac2))}
+.drawer hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{padding:16px 8px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--tx);cursor:pointer;text-align:center;animation:rise .5s backwards;animation-delay:calc(var(--i,0) * 80ms);transition:transform .2s,border-color .2s}
+.stat:hover{border-color:var(--ac)}
+.stat:active{transform:scale(.95)}
+.stat b{display:block;font-size:30px;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat span{font-size:13px;color:var(--mut)}
+.sel{width:100%;margin-bottom:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--inp);color:var(--tx);font-size:15px;font-family:inherit}
+.sel option{color:#14122b}

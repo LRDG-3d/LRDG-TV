@@ -34,6 +34,14 @@ const paths = {
       <path d="M20 20l-3.5-3.5" />
     </>
   ),
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  out: <path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9" />,
+  eye: (
+    <>
+      <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
 }
 
 export default function Icon({ name, className = 'ico' }) {
