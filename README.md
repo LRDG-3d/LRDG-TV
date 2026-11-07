@@ -25,3 +25,10 @@ Los visitantes no ven ningún botón de administrador.
 ## Publicación
 El archivo `.github/workflows/deploy.yml` publica la página en GitHub Pages en cada push a `main`
 (Settings -> Pages -> Source: GitHub Actions).
+
+## Datos en Firestore
+- `temporadas`: número (`n`) y nombre opcional
+- `episodios`: título, temporada (`s`), episodio (`e`), duración y enlace
+- `estrenos`: título, fecha (`f`), hora (`h`), temporada y episodio
+
+Publica de nuevo `firestore.rules` en Firebase (con tu correo): ahora cubre las tres colecciones.

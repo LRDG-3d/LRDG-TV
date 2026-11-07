@@ -1,10 +1,14 @@
 import Icon from './Icon.jsx'
 
-export default function EpisodeCard({ ep, isNew, canDelete, onDelete }) {
+export default function EpisodeCard({ ep, index = 0, isNew, canDelete, onDelete }) {
   const code = `T${ep.s || 1}E${String(ep.e || 1).padStart(2, '0')}`
 
   return (
-    <div className="ep" onClick={() => ep.u && window.open(ep.u, '_blank', 'noopener')}>
+    <div
+      className="ep"
+      style={{ '--i': index }}
+      onClick={() => ep.u && window.open(ep.u, '_blank', 'noopener')}
+    >
       <div className="th">
         <Icon name="rose" />
         {isNew && <span className="tag">NOVEDAD</span>}
@@ -15,16 +19,16 @@ export default function EpisodeCard({ ep, isNew, canDelete, onDelete }) {
         <span>{code}</span>
       </div>
       {canDelete && (
-      <button
-        className="dots"
-        aria-label="Eliminar capítulo"
-        onClick={(e) => {
-          e.stopPropagation()
-          if (confirm('¿Eliminar este capítulo?')) onDelete()
-        }}
-      >
-        ⋮
-      </button>
+        <button
+          className="dots"
+          aria-label="Eliminar capítulo"
+          onClick={(e) => {
+            e.stopPropagation()
+            if (confirm('¿Eliminar este capítulo?')) onDelete()
+          }}
+        >
+          ⋮
+        </button>
       )}
     </div>
   )

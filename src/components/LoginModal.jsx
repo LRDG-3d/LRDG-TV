@@ -1,21 +1,19 @@
 import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../firebase'
+import Modal, { Actions } from './Modal.jsx'
 
-export default function LoginModal({ open, onClose }) {
+export default function LoginModal({ onClose }) {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  if (!open) return null
 
-  const submit = async (ev) => {
-    ev.preventDefault()
+  const submit = async () => {
     setBusy(true)
     setError('')
     try {
       await signInWithEmailAndPassword(auth, email.trim(), pass)
-      setPass('')
     } catch {
       setError('Correo o contraseña incorrectos.')
     }
@@ -23,17 +21,11 @@ export default function LoginModal({ open, onClose }) {
   }
 
   return (
-    <div className="modal on" onClick={(ev) => ev.target === ev.currentTarget && onClose()}>
-      <form className="box" onSubmit={submit}>
-        <h3>Acceso de administrador</h3>
-        <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus required />
-        <input type="password" placeholder="Contraseña" value={pass} onChange={(e) => setPass(e.target.value)} required />
-        {error && <p className="err">{error}</p>}
-        <div className="row">
-          <button type="button" className="btn g" onClick={onClose}>Cancelar</button>
-          <button className="btn" disabled={busy}>{busy ? 'Entrando...' : 'Entrar'}</button>
-        </div>
-      </form>
-    </div>
+    <Modal title="Acceso de administrador" onClose={onClose} onSubmit={submit}>
+      <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus required />
+      <input type="password" placeholder="Contraseña" value={pass} onChange={(e) => setPass(e.target.value)} required />
+      {error && <p className="err">{error}</p>}
+      <Actions onClose={onClose} label={busy ? 'Entrando...' : 'Entrar'} busy={busy} />
+    </Modal>
   )
 }
