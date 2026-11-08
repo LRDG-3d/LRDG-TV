@@ -9,8 +9,11 @@ export default function EpisodeCard({ ep, index = 0, isNew, canDelete, onDelete 
       style={{ '--i': index }}
       onClick={() => { window.location.hash = '#/ver/' + ep.id }}
     >
-      <div className="th">
-        <Icon name="rose" />
+      <div
+        className="th"
+        style={ep.img ? { backgroundImage: `url("${ep.img}")`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+      >
+        {!ep.img && <Icon name="rose" />}
         {isNew && <span className="tag">NOVEDAD</span>}
         {ep.d && <span className="dur">{ep.d}</span>}
       </div>

@@ -109,6 +109,7 @@ export default function Player({ ep, eps, loaded, onBack }) {
             src={src.src}
             playsInline
             preload="metadata"
+            poster={ep.img || undefined}
             onTimeUpdate={(e) => setCur(e.target.currentTime)}
             onLoadedMetadata={(e) => setDur(e.target.duration)}
             onPlay={() => { setPlaying(true); wake() }}

@@ -39,3 +39,11 @@ Al tocar un capítulo se abre el reproductor (`#/ver/<id>`).
 - Horizontal (o pantalla completa): panel de cristal, tarjeta de siguiente capítulo y botón "Saltar intro".
 - Enlaces válidos: video directo (.mp4/.webm), YouTube, Vimeo o Google Drive (compartido como "Cualquiera con el enlace").
   Con YouTube, Vimeo y Drive se usan los controles propios de esos servicios.
+
+## Duración y miniatura automáticas
+Al pegar el enlace en "Agregar capítulo":
+- Video directo (.mp4/.webm): detecta la duración; la miniatura se toma de un fotograma si el servidor lo permite.
+- YouTube: miniatura y duración automáticas.
+- Vimeo: miniatura y duración automáticas.
+- Google Drive: miniatura automática; la duración se escribe a mano.
+También puedes elegir una imagen de tu teléfono como miniatura.

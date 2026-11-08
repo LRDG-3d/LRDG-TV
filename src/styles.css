@@ -184,3 +184,9 @@ nav button:active .nav-ico{transform:scale(.85)}
 *{-webkit-tap-highlight-color:transparent}
 button,.ep,.day,.chip,.seek,video{outline:none;-webkit-user-select:none;user-select:none}
 button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+
+/* Miniatura en el formulario */
+.thumbprev{width:100%;aspect-ratio:16/9;border-radius:14px;border:1px dashed var(--line);background:var(--inp) center/cover no-repeat;margin-bottom:8px;display:grid;place-items:center;color:var(--mut);font-size:13px}
+.thumbrow{display:flex;gap:8px;margin-bottom:10px}
+.btn.sm{display:grid;place-items:center;text-align:center;padding:10px;font-size:14px}
+.note.stat{margin:-4px 0 10px;text-align:left;font-size:13px}
