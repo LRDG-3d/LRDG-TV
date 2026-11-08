@@ -7,7 +7,7 @@ export default function EpisodeCard({ ep, index = 0, isNew, canDelete, onDelete 
     <div
       className="ep"
       style={{ '--i': index }}
-      onClick={() => ep.u && window.open(ep.u, '_blank', 'noopener')}
+      onClick={() => { window.location.hash = '#/ver/' + ep.id }}
     >
       <div className="th">
         <Icon name="rose" />

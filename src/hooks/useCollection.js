@@ -6,12 +6,16 @@ import { db } from '../firebase'
 
 export default function useCollection(name, field = 'creado') {
   const [items, setItems] = useState([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const q = query(collection(db, name), orderBy(field, 'asc'))
     return onSnapshot(
       q,
-      (snap) => setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (snap) => {
+        setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+        setLoaded(true)
+      },
       (err) => console.error('Firestore', name, err)
     )
   }, [name, field])
@@ -19,5 +23,5 @@ export default function useCollection(name, field = 'creado') {
   const add = (data) => addDoc(collection(db, name), { ...data, creado: serverTimestamp() })
   const remove = (id) => deleteDoc(doc(db, name, id))
 
-  return { items, add, remove }
+  return { items, add, remove, loaded }
 }

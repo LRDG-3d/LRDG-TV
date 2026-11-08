@@ -5,6 +5,7 @@ import SeasonModal from './SeasonModal.jsx'
 import EpisodeModal from './EpisodeModal.jsx'
 import ReleaseModal from './ReleaseModal.jsx'
 import { fmtDay } from '../utils/dates.js'
+import { explain } from '../utils/errors.js'
 
 const MENU = [
   { id: 'resumen', icon: 'home', label: 'Resumen' },
@@ -33,11 +34,11 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
     try {
       await fn()
       setSheet(null)
-    } catch {
-      alert('No se pudo guardar. Revisa que hayas iniciado sesión con el correo admin.')
+    } catch (err) {
+      alert(explain(err))
     }
   }
-  const del = (coll, id, msg) => confirm(msg) && coll.remove(id).catch(() => alert('No se pudo borrar.'))
+  const del = (coll, id, msg) => confirm(msg) && coll.remove(id).catch((err) => alert(explain(err)))
   const delSeason = (s) => {
     if (countIn(s.n)) return alert('Borra primero los capítulos de esa temporada.')
     del(sC, s.id, `¿Eliminar la temporada ${s.n}?`)

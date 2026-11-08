@@ -7,6 +7,7 @@ import EpisodeCard from './components/EpisodeCard.jsx'
 import Calendar from './components/Calendar.jsx'
 import LoginModal from './components/LoginModal.jsx'
 import AdminPanel from './components/AdminPanel.jsx'
+import Player from './components/Player.jsx'
 import useCollection from './hooks/useCollection.js'
 import useAdmin from './hooks/useAdmin.js'
 import useHash from './hooks/useHash.js'
@@ -49,6 +50,13 @@ export default function App() {
         onSite={leaveAdmin}
         onLogout={() => signOut(auth).then(leaveAdmin)}
       />
+    )
+  }
+
+  const verId = hash.startsWith('#/ver/') ? hash.slice(6) : null
+  if (verId) {
+    return (
+      <Player key={verId} ep={eps.find((e) => e.id === verId)} eps={eps} loaded={eC.loaded} onBack={leaveAdmin} />
     )
   }
 

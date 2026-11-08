@@ -34,6 +34,11 @@ const paths = {
       <path d="M20 20l-3.5-3.5" />
     </>
   ),
+  back: <path d="M15 5l-7 7 7 7" />,
+  pause: <path d="M7 4h3.5v16H7zM13.5 4H17v16h-3.5z" />,
+  back10: <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />,
+  fwd10: <path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5" />,
+  full: <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   out: <path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9" />,
   eye: (

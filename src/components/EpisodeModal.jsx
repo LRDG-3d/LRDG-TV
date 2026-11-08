@@ -7,6 +7,7 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
   const [t, setT] = useState('')
   const [d, setD] = useState('')
   const [u, setU] = useState('')
+  const [si, setSi] = useState('')
 
   if (!seasons.length) {
     return (
@@ -26,7 +27,7 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
 
   const submit = () => {
     if (!t.trim()) return
-    onSave({ t: t.trim(), s: Number(s), e: Number(e) || nextE, d: d.trim(), u: u.trim() })
+    onSave({ t: t.trim(), s: Number(s), e: Number(e) || nextE, d: d.trim(), u: u.trim(), si: Number(si) || null })
   }
 
   return (
@@ -42,7 +43,8 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
       <input type="number" min="1" placeholder={`Número de episodio (siguiente: ${nextE})`} value={e} onChange={(ev) => setE(ev.target.value)} />
       <input placeholder="Título del capítulo" value={t} onChange={(ev) => setT(ev.target.value)} autoFocus required />
       <input placeholder="Duración (ej. 45:00)" value={d} onChange={(ev) => setD(ev.target.value)} />
-      <input placeholder="Enlace del video (opcional)" value={u} onChange={(ev) => setU(ev.target.value)} />
+      <input placeholder="Enlace del video (.mp4, YouTube, Vimeo o Drive)" value={u} onChange={(ev) => setU(ev.target.value)} />
+      <input type="number" min="0" placeholder="Saltar intro hasta el segundo (opcional)" value={si} onChange={(ev) => setSi(ev.target.value)} />
       <Actions onClose={onClose} />
     </Modal>
   )

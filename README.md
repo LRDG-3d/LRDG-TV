@@ -32,3 +32,10 @@ El archivo `.github/workflows/deploy.yml` publica la página en GitHub Pages en 
 - `estrenos`: título, fecha (`f`), hora (`h`), temporada y episodio
 
 Publica de nuevo `firestore.rules` en Firebase (con tu correo): ahora cubre las tres colecciones.
+
+## Reproductor
+Al tocar un capítulo se abre el reproductor (`#/ver/<id>`).
+- Vertical: video arriba, ficha del capítulo y siguientes capítulos.
+- Horizontal (o pantalla completa): panel de cristal, tarjeta de siguiente capítulo y botón "Saltar intro".
+- Enlaces válidos: video directo (.mp4/.webm), YouTube, Vimeo o Google Drive (compartido como "Cualquiera con el enlace").
+  Con YouTube, Vimeo y Drive se usan los controles propios de esos servicios.

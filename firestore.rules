@@ -2,7 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Cambia el correo por el de tu usuario admin
+    // Opción A: por correo (en minúsculas, igual que en Authentication)
+    // Opción B (más segura contra errores de escritura): por UID.
+    //   Cópialo de Authentication -> Usuarios -> columna "UID de usuario" y usa:
+    //   return request.auth != null && request.auth.uid == "TU-UID";
     function esAdmin() {
       return request.auth != null
         && request.auth.token.email == "TU-CORREO@gmail.com";
