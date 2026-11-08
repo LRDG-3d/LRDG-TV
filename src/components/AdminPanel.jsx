@@ -77,7 +77,7 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
     alert(`Listo: se actualizaron ${ok} de ${todo.length} capítulos.`)
   }
 
-  const code = (r) = (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
+  const code = (r) => (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
 
   return (
     <>
