@@ -109,7 +109,6 @@ export default function Player({ ep, eps, loaded, onBack }) {
             src={src.src}
             playsInline
             preload="metadata"
-            onClick={toggle}
             onTimeUpdate={(e) => setCur(e.target.currentTime)}
             onLoadedMetadata={(e) => setDur(e.target.duration)}
             onPlay={() => { setPlaying(true); wake() }}
@@ -142,16 +141,6 @@ export default function Player({ ep, eps, loaded, onBack }) {
             {!playing && (
               <button className="cplay" aria-label="Reproducir" onClick={toggle}>
                 <Icon name="play" className="ico fill" />
-              </button>
-            )}
-            {next && (
-              <button className="nextc ov" onClick={() => go(next.id)}>
-                <span className="nt" />
-                <span>
-                  <small>SIGUIENTE</small>
-                  <b>{next.t}</b>
-                  <span>{codeOf(next)}</span>
-                </span>
               </button>
             )}
             <div className="dock ov">

@@ -166,12 +166,6 @@ nav button:active .nav-ico{transform:scale(.85)}
 .seek{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:6px;margin:0;border-radius:3px;outline:0;cursor:pointer;background:linear-gradient(90deg,var(--ac) 0,var(--ac2) var(--p,0%),rgba(255,255,255,.28) var(--p,0%))}
 .seek::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:0}
 .seek::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:0}
-.nextc{position:absolute;right:40px;bottom:118px;width:270px;padding:10px;border-radius:18px;display:none;gap:10px;align-items:center;background:rgba(20,18,32,.55);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#fff;cursor:pointer;text-align:left;font:inherit}
-.pl.l .nextc{display:flex}
-.nt{width:72px;height:44px;flex:none;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2))}
-.nextc small{display:block;font-size:11px;letter-spacing:1px;color:#38bdf8;font-weight:700}
-.nextc b{display:block;font-size:13px}
-.nextc span span{font-size:12px;color:#b9c3e6}
 .meta{max-width:640px;margin:0 auto;padding:20px 16px 40px}
 .pl.l .meta{display:none}
 .meta h1{font-size:22px;margin:0}
@@ -179,3 +173,14 @@ nav button:active .nav-ico{transform:scale(.85)}
 .meta .rb{background:var(--onbg);color:var(--tx)}
 .chipsrow{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 8px}
 .chipb{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:600 14px inherit;cursor:pointer}
+
+/* Barra horizontal más compacta */
+.pl.l .dock{left:56px;right:56px;bottom:20px;height:62px;border-radius:31px;padding:0 10px;gap:8px;font-size:12px}
+.pl.l .dock .rb{width:40px;height:40px;font-size:20px}
+.pl.l .dock .dk-play{width:46px;height:46px}
+.pl.l .dock .rb.rate{width:auto;padding:0 10px;font-size:13px}
+
+/* Sin cuadros azules al tocar botones */
+*{-webkit-tap-highlight-color:transparent}
+button,.ep,.day,.chip,.seek,video{outline:none;-webkit-user-select:none;user-select:none}
+button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
