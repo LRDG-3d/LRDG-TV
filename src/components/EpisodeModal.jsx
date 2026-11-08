@@ -14,6 +14,22 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
   const dTouched = useRef(false)
   const iTouched = useRef(false)
 
+  const runId = useRef(0)
+
+  const detect = async (url) => {
+    const id = ++runId.current
+    setStatus('Detectando duración y miniatura...')
+    const apply = (r) => {
+      if (id !== runId.current) return
+      if (r.dur && !dTouched.current) setD(formatDuration(r.dur))
+      if (r.img && !iTouched.current) setImg(r.img)
+    }
+    const r = await probe(url, apply)
+    if (id !== runId.current) return
+    apply(r)
+    setStatus(r.dur ? 'Duración detectada.' : 'No se pudo detectar la duración, escríbela tú.')
+  }
+
   // Al pegar el enlace, detecta duración y miniatura solas
   useEffect(() => {
     const url = u.trim()
@@ -21,18 +37,10 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
       setStatus('')
       return
     }
-    let off = false
-    setStatus('Detectando duración y miniatura...')
-    const timer = setTimeout(async () => {
-      const r = await probe(url)
-      if (off) return
-      if (r.dur && !dTouched.current) setD(formatDuration(r.dur))
-      if (r.img && !iTouched.current) setImg(r.img)
-      setStatus(r.dur ? 'Duración detectada.' : 'No se pudo detectar la duración, escríbela tú.')
-    }, 700)
+    const timer = setTimeout(() => detect(url), 600)
     return () => {
-      off = true
       clearTimeout(timer)
+      runId.current++
     }
   }, [u])
 
@@ -89,6 +97,20 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
       <input type="number" min="1" placeholder={`Número de episodio (siguiente: ${nextE})`} value={e} onChange={(ev) => setE(ev.target.value)} />
       <input placeholder="Título del capítulo" value={t} onChange={(ev) => setT(ev.target.value)} autoFocus required />
       <input placeholder="Enlace del video (.mp4, YouTube, Vimeo o Drive)" value={u} onChange={(ev) => setU(ev.target.value)} />
+      {/^https?:\/\//i.test(u.trim()) && (
+        <button
+          type="button"
+          className="btn g sm"
+          style={{ width: '100%', marginBottom: 10 }}
+          onClick={() => {
+            dTouched.current = false
+            iTouched.current = false
+            detect(u.trim())
+          }}
+        >
+          Detectar duración y miniatura
+        </button>
+      )}
       {status && <p className="note stat">{status}</p>}
       <input
         placeholder="Duración (se detecta sola, o escríbela: 45:00)"

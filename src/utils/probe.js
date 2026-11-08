@@ -1,4 +1,5 @@
 // Detecta duración y miniatura a partir del enlace del video
+import { API_KEY } from '../firebase'
 
 const YT_RE = /(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/
 const VM_RE = /vimeo\.com\/(\d+)/
@@ -12,10 +13,16 @@ export function formatDuration(sec) {
   return h ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`
 }
 
-const withTimeout = (p, ms = 15000) =>
-  Promise.race([p, new Promise((r) => setTimeout(() => r(null), ms))])
+const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(() => r(null), ms))])
 
-// Dibuja una imagen o un fotograma en 640x360 y lo devuelve como JPEG
+// Devuelve el primer resultado válido de varias fuentes en paralelo
+const firstTruthy = (ps) =>
+  new Promise((res) => {
+    let left = ps.length
+    const miss = () => --left === 0 && res(null)
+    ps.forEach((p) => p.then((v) => (v ? res(v) : miss())).catch(miss))
+  })
+
 export function drawToJpeg(src, w, h) {
   const c = document.createElement('canvas')
   c.width = 640
@@ -42,44 +49,70 @@ export function fileToThumb(file) {
   })
 }
 
+// Video oculto dentro de la página (en el teléfono, uno suelto a veces no carga)
+function hiddenVideo(extra) {
+  const v = document.createElement('video')
+  v.muted = true
+  v.playsInline = true
+  v.preload = 'auto'
+  if (extra) extra(v)
+  v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none'
+  document.body.appendChild(v)
+  return v
+}
+
 function videoDuration(url) {
   return new Promise((res) => {
-    const v = document.createElement('video')
-    v.preload = 'metadata'
-    v.muted = true
-    v.onloadedmetadata = () => {
-      res(isFinite(v.duration) ? v.duration : null)
-      v.removeAttribute('src')
-      v.load()
+    const v = hiddenVideo()
+    const end = (d) => {
+      v.remove()
+      res(d)
     }
-    v.onerror = () => res(null)
+    v.onloadedmetadata = () => end(isFinite(v.duration) && v.duration > 0 ? v.duration : null)
+    v.onerror = () => end(null)
     v.src = url
+    v.load()
   })
 }
 
 // Fotograma del video (solo si el servidor permite CORS)
 function videoFrame(url) {
   return new Promise((res) => {
-    const v = document.createElement('video')
-    v.crossOrigin = 'anonymous'
-    v.preload = 'auto'
-    v.muted = true
-    v.playsInline = true
+    const v = hiddenVideo((x) => (x.crossOrigin = 'anonymous'))
+    const end = (i) => {
+      v.remove()
+      res(i)
+    }
     v.onloadedmetadata = () => {
       v.currentTime = Math.min(5, (v.duration || 10) * 0.1)
     }
     v.onseeked = () => {
       try {
-        res(drawToJpeg(v, v.videoWidth, v.videoHeight))
+        end(drawToJpeg(v, v.videoWidth, v.videoHeight))
       } catch {
-        res(null)
+        end(null)
       }
     }
-    v.onerror = () => res(null)
+    v.onerror = () => end(null)
     v.src = url
+    v.load()
   })
 }
 
+// YouTube: API de datos (si está activada en el proyecto)
+async function ytApiDuration(id) {
+  try {
+    const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${id}&key=${API_KEY}`)
+    if (!r.ok) return null
+    const iso = (await r.json()).items?.[0]?.contentDetails?.duration
+    const m = iso && iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+    return m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : null
+  } catch {
+    return null
+  }
+}
+
+// YouTube: reproductor invisible que lee la duración
 let ytReady
 function loadYT() {
   if (window.YT?.Player) return Promise.resolve()
@@ -101,7 +134,7 @@ async function youtubeDuration(id) {
   await loadYT()
   return new Promise((res) => {
     const holder = document.createElement('div')
-    holder.style.cssText = 'position:fixed;left:-9999px;top:0;width:200px;height:120px'
+    holder.style.cssText = 'position:fixed;left:0;top:0;width:200px;height:120px;opacity:0;pointer-events:none;z-index:-1'
     const inner = document.createElement('div')
     holder.appendChild(inner)
     document.body.appendChild(holder)
@@ -115,16 +148,20 @@ async function youtubeDuration(id) {
     }
     player = new window.YT.Player(inner, {
       videoId: id,
-      playerVars: { controls: 0 },
+      playerVars: { controls: 0, playsinline: 1 },
       events: {
         onReady: () => {
+          try {
+            player.mute()
+            player.playVideo()
+          } catch {}
           let n = 0
           const t = setInterval(() => {
             const d = player.getDuration?.()
             if (d > 0) {
               clearInterval(t)
               done(d)
-            } else if (++n > 20) {
+            } else if (++n > 30) {
               clearInterval(t)
               done(null)
             }
@@ -136,30 +173,41 @@ async function youtubeDuration(id) {
   })
 }
 
-export async function probe(url) {
+// onUpdate recibe lo que se vaya encontrando (la miniatura sale antes que la duración)
+export async function probe(url, onUpdate = () => {}) {
   const out = { dur: null, img: null }
+  const upd = (p) => {
+    Object.assign(out, p)
+    onUpdate({ ...out })
+  }
+
   const yt = url.match(YT_RE)
   if (yt) {
-    out.img = `https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`
-    out.dur = await withTimeout(youtubeDuration(yt[1]))
+    upd({ img: `https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg` })
+    const d = await withTimeout(firstTruthy([ytApiDuration(yt[1]), youtubeDuration(yt[1])]), 12000)
+    if (d) upd({ dur: d })
     return out
   }
+
   const vm = url.match(VM_RE)
   if (vm) {
     try {
       const r = await fetch('https://vimeo.com/api/oembed.json?url=' + encodeURIComponent('https://vimeo.com/' + vm[1]))
       const j = await r.json()
-      out.dur = j.duration || null
-      out.img = j.thumbnail_url || null
+      upd({ dur: j.duration || null, img: j.thumbnail_url || null })
     } catch {}
     return out
   }
+
   const dr = url.match(DR_RE)
   if (dr) {
-    out.img = `https://drive.google.com/thumbnail?id=${dr[1]}&sz=w640`
+    upd({ img: `https://drive.google.com/thumbnail?id=${dr[1]}&sz=w640` })
     return out
   }
-  out.dur = await withTimeout(videoDuration(url))
-  out.img = await withTimeout(videoFrame(url))
+
+  await Promise.all([
+    withTimeout(videoDuration(url), 12000).then((d) => d && upd({ dur: d })),
+    withTimeout(videoFrame(url), 12000).then((i) => i && upd({ img: i })),
+  ])
   return out
 }

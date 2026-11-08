@@ -13,5 +13,6 @@ const app = initializeApp({
   appId: '1:661558065374:web:6b23c1be694e8613786a4f',
 })
 
+export const API_KEY = 'AIzaSyDEzx6v04WeKiNeiVzincd8zrnSvIedjR0'
 export const auth = getAuth(app)
 export const db = getFirestore(app)
