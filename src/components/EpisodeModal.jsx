@@ -2,23 +2,26 @@ import { useEffect, useRef, useState } from 'react'
 import Modal, { Actions } from './Modal.jsx'
 import { probe, formatDuration, fileToThumb } from '../utils/probe.js'
 
-export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave, onClose }) {
-  const [s, setS] = useState(defaultSeason ?? seasons[seasons.length - 1]?.n ?? '')
-  const [e, setE] = useState('')
-  const [t, setT] = useState('')
-  const [d, setD] = useState('')
-  const [u, setU] = useState('')
-  const [si, setSi] = useState('')
-  const [img, setImg] = useState('')
+export default function EpisodeModal({ seasons, episodes, defaultSeason, initial, onSave, onClose }) {
+  const [s, setS] = useState(initial?.s ?? defaultSeason ?? seasons[seasons.length - 1]?.n ?? '')
+  const [e, setE] = useState(initial?.e ? String(initial.e) : '')
+  const [t, setT] = useState(initial?.t ?? '')
+  const [d, setD] = useState(initial?.d ?? '')
+  const [u, setU] = useState(initial?.u ?? '')
+  const [si, setSi] = useState(initial?.si ? String(initial.si) : '')
+  const [img, setImg] = useState(initial?.img ?? '')
   const [status, setStatus] = useState('')
-  const dTouched = useRef(false)
-  const iTouched = useRef(false)
-
+  const [scanning, setScanning] = useState(false)
+  const dTouched = useRef(!!initial?.d)
+  const iTouched = useRef(!!initial?.img)
   const runId = useRef(0)
+  const valid = /^https?:\/\//i.test(u.trim())
 
-  const detect = async (url) => {
+  // Escanea el enlace: duración y miniatura
+  const scan = async (url) => {
     const id = ++runId.current
-    setStatus('Detectando duración y miniatura...')
+    setScanning(true)
+    setStatus('Escaneando el enlace...')
     const apply = (r) => {
       if (id !== runId.current) return
       if (r.dur && !dTouched.current) setD(formatDuration(r.dur))
@@ -27,17 +30,24 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
     const r = await probe(url, apply)
     if (id !== runId.current) return
     apply(r)
-    setStatus(r.dur ? 'Duración detectada.' : 'No se pudo detectar la duración, escríbela tú.')
+    setScanning(false)
+    setStatus(
+      `${r.dur ? 'Duración ' + formatDuration(r.dur) : 'Duración no detectada (escríbela)'} - ${
+        r.img ? 'miniatura lista' : 'sin miniatura (elige una imagen)'
+      }`
+    )
   }
 
-  // Al pegar el enlace, detecta duración y miniatura solas
+  // Al pegar un enlace nuevo escanea solo (al editar, solo con el botón)
   useEffect(() => {
+    if (initial) return
     const url = u.trim()
     if (!/^https?:\/\//i.test(url)) {
       setStatus('')
+      setScanning(false)
       return
     }
-    const timer = setTimeout(() => detect(url), 600)
+    const timer = setTimeout(() => scan(url), 600)
     return () => {
       clearTimeout(timer)
       runId.current++
@@ -57,7 +67,7 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
 
   const nextE =
     episodes
-      .filter((x) => Number(x.s) === Number(s))
+      .filter((x) => x.id !== initial?.id && Number(x.s) === Number(s))
       .reduce((m, x) => Math.max(m, Number(x.e) || 0), 0) + 1
 
   const onFile = async (ev) => {
@@ -85,7 +95,7 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
   }
 
   return (
-    <Modal title="Agregar capítulo" onClose={onClose} onSubmit={submit}>
+    <Modal title={initial ? 'Editar capítulo' : 'Agregar capítulo'} onClose={onClose} onSubmit={submit}>
       <label className="lbl">Temporada</label>
       <select value={s} onChange={(ev) => setS(ev.target.value)}>
         {seasons.map((x) => (
@@ -95,22 +105,20 @@ export default function EpisodeModal({ seasons, episodes, defaultSeason, onSave,
         ))}
       </select>
       <input type="number" min="1" placeholder={`Número de episodio (siguiente: ${nextE})`} value={e} onChange={(ev) => setE(ev.target.value)} />
-      <input placeholder="Título del capítulo" value={t} onChange={(ev) => setT(ev.target.value)} autoFocus required />
+      <input placeholder="Título del capítulo" value={t} onChange={(ev) => setT(ev.target.value)} autoFocus={!initial} required />
       <input placeholder="Enlace del video (.mp4, YouTube, Vimeo o Drive)" value={u} onChange={(ev) => setU(ev.target.value)} />
-      {/^https?:\/\//i.test(u.trim()) && (
-        <button
-          type="button"
-          className="btn g sm"
-          style={{ width: '100%', marginBottom: 10 }}
-          onClick={() => {
-            dTouched.current = false
-            iTouched.current = false
-            detect(u.trim())
-          }}
-        >
-          Detectar duración y miniatura
-        </button>
-      )}
+      <button
+        type="button"
+        className="btn scan"
+        disabled={!valid || scanning}
+        onClick={() => {
+          dTouched.current = false
+          iTouched.current = false
+          scan(u.trim())
+        }}
+      >
+        {scanning ? 'Escaneando...' : 'Escanear URL (duración y miniatura)'}
+      </button>
       {status && <p className="note stat">{status}</p>}
       <input
         placeholder="Duración (se detecta sola, o escríbela: 45:00)"

@@ -6,6 +6,7 @@ import EpisodeModal from './EpisodeModal.jsx'
 import ReleaseModal from './ReleaseModal.jsx'
 import { fmtDay } from '../utils/dates.js'
 import { explain } from '../utils/errors.js'
+import { probe, formatDuration } from '../utils/probe.js'
 
 const MENU = [
   { id: 'resumen', icon: 'home', label: 'Resumen' },
@@ -19,6 +20,8 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
   const [open, setOpen] = useState(false)
   const [sheet, setSheet] = useState(null)
   const [fs, setFs] = useState('all')
+  const [edit, setEdit] = useState(null)
+  const [prog, setProg] = useState('')
 
   const eps = eC.items
   const seasons = sC.items
@@ -30,10 +33,11 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
     setOpen(false)
     window.scrollTo(0, 0)
   }
-  const run = async (fn) => {
+  const run = async (fn, after) => {
     try {
       await fn()
       setSheet(null)
+      after?.()
     } catch (err) {
       alert(explain(err))
     }
@@ -48,7 +52,32 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
     .filter((e) => fs === 'all' || Number(e.s) === Number(fs))
     .sort((a, b) => a.s - b.s || a.e - b.e)
 
-  const code = (r) => (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
+  const scanAll = async () => {
+    const todo = epList.filter((x) => x.u && (!x.d || !x.img))
+    if (!todo.length) return alert('Todos los capítulos ya tienen duración y miniatura.')
+    let ok = 0
+    for (let i = 0; i < todo.length; i++) {
+      setProg(`Escaneando ${i + 1} de ${todo.length}...`)
+      const x = todo[i]
+      const r = await probe(x.u)
+      const patch = {}
+      if (!x.d && r.dur) patch.d = formatDuration(r.dur)
+      if (!x.img && r.img) patch.img = r.img
+      if (Object.keys(patch).length) {
+        try {
+          await eC.update(x.id, patch)
+          ok++
+        } catch (err) {
+          setProg('')
+          return alert(explain(err))
+        }
+      }
+    }
+    setProg('')
+    alert(`Listo: se actualizaron ${ok} de ${todo.length} capítulos.`)
+  }
+
+  const code = (r) = (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
 
   return (
     <>
@@ -123,14 +152,17 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
             {epList.length ? epList.map((e, i) => (
               <div className="rel" key={e.id} style={{ '--i': i }}>
                 <div className="when">{code(e)}</div>
+                {e.img && <div className="rthumb" style={{ backgroundImage: `url("${e.img}")` }} />}
                 <div className="info">
                   <b>{e.t}</b>
-                  {e.d && <span>{e.d}</span>}
+                  <span>{e.d || 'Sin duración'}</span>
                 </div>
+                <button className="dots" aria-label="Editar capítulo" onClick={() => setEdit(e)}><Icon name="edit" /></button>
                 <button className="dots" aria-label="Eliminar capítulo" onClick={() => del(eC, e.id, '¿Eliminar este capítulo?')}>×</button>
               </div>
             )) : <Empty icon="clap">No hay capítulos todavía.</Empty>}
             <button className="btn add" onClick={() => setSheet('episode')}>+ Agregar capítulo</button>
+            <button className="btn g add" disabled={!!prog} onClick={scanAll}>{prog || 'Escanear todos (duración y miniatura)'}</button>
           </>
         )}
 
@@ -162,6 +194,15 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
           defaultSeason={fs !== 'all' ? Number(fs) : undefined}
           onClose={() => setSheet(null)}
           onSave={(d) => run(() => eC.add(d))}
+        />
+      )}
+      {edit && (
+        <EpisodeModal
+          seasons={seasons}
+          episodes={eps}
+          initial={edit}
+          onClose={() => setEdit(null)}
+          onSave={(d) => run(() => eC.update(edit.id, d), () => setEdit(null))}
         />
       )}
       {sheet === 'release' && (

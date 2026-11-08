@@ -39,6 +39,7 @@ const paths = {
   back10: <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />,
   fwd10: <path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5" />,
   full: <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />,
+  edit: <path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   out: <path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9" />,
   eye: (

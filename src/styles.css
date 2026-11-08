@@ -190,3 +190,8 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 .thumbrow{display:flex;gap:8px;margin-bottom:10px}
 .btn.sm{display:grid;place-items:center;text-align:center;padding:10px;font-size:14px}
 .note.stat{margin:-4px 0 10px;text-align:left;font-size:13px}
+
+/* Escaneo y edición */
+.btn.scan{width:100%;flex:none;margin-bottom:10px}
+.btn.add.g{margin-top:10px}
+.rthumb{width:56px;height:32px;flex:none;border-radius:8px;background:var(--inp) center/cover no-repeat}
