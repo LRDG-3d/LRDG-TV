@@ -3,6 +3,7 @@ import Icon from './Icon.jsx'
 import EpisodeCard from './EpisodeCard.jsx'
 import useMedia from '../hooks/useMedia.js'
 import { parseSource } from '../utils/source.js'
+import { byNumber } from '../utils/sort.js'
 
 const SPEEDS = [1, 1.25, 1.5, 2, 0.75]
 const go = (id) => {
@@ -54,7 +55,7 @@ export default function Player({ ep, eps, loaded, onBack }) {
   }
 
   const src = parseSource(ep.u)
-  const sorted = [...eps].sort((a, b) => a.s - b.s || a.e - b.e)
+  const sorted = [...eps].sort(byNumber)
   const idx = sorted.findIndex((x) => x.id === ep.id)
   const upcoming = sorted.slice(idx + 1, idx + 4)
   const next = upcoming[0]

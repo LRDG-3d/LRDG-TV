@@ -11,6 +11,7 @@ import Player from './components/Player.jsx'
 import useCollection from './hooks/useCollection.js'
 import useAdmin from './hooks/useAdmin.js'
 import useHash from './hooks/useHash.js'
+import { byNumber } from './utils/sort.js'
 
 const NAV = [
   { id: 'inicio', icon: 'home', label: 'Inicio' },
@@ -67,7 +68,7 @@ export default function App() {
 
   const q = query.toLowerCase()
   const filtered = eps.filter((e) => e.t.toLowerCase().includes(q))
-  const recent = [...filtered].reverse().slice(0, 6)
+  const recent = [...filtered].sort((a, b) => byNumber(b, a)).slice(0, 6)
   const nums = [...new Set([...seasons.map((s) => Number(s.n)), ...eps.map((e) => Number(e.s))])].sort((a, b) => a - b)
   const seasonName = (n) => {
     const s = seasons.find((x) => Number(x.n) === n)
@@ -132,7 +133,7 @@ export default function App() {
                   ))}
                 </div>
                 {(filter === 'all' ? nums : [filter]).map((n) => {
-                  const l = filtered.filter((e) => Number(e.s) === n).sort((a, b) => a.e - b.e)
+                  const l = filtered.filter((e) => Number(e.s) === n).sort(byNumber)
                   if (filter === 'all' && query && !l.length) return null
                   return (
                     <section key={n}>

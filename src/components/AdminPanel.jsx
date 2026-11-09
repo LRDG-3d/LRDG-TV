@@ -6,6 +6,7 @@ import EpisodeModal from './EpisodeModal.jsx'
 import ReleaseModal from './ReleaseModal.jsx'
 import { fmtDay } from '../utils/dates.js'
 import { explain } from '../utils/errors.js'
+import { byNumber } from '../utils/sort.js'
 import { probe, formatDuration } from '../utils/probe.js'
 
 const MENU = [
@@ -50,7 +51,7 @@ export default function AdminPanel({ eC, sC, rC, onSite, onLogout }) {
 
   const epList = eps
     .filter((e) => fs === 'all' || Number(e.s) === Number(fs))
-    .sort((a, b) => a.s - b.s || a.e - b.e)
+    .sort(byNumber)
 
   const scanAll = async () => {
     const todo = epList.filter((x) => x.u && (!x.d || !x.img))
