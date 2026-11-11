@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Icon from './Icon.jsx'
 import Empty from './Empty.jsx'
 import SerieModal from './SerieModal.jsx'
+import CategoriaModal from './CategoriaModal.jsx'
 import SeasonModal from './SeasonModal.jsx'
 import EpisodeModal from './EpisodeModal.jsx'
 import ReleaseModal from './ReleaseModal.jsx'
@@ -13,12 +14,13 @@ import { byNumber } from '../utils/sort.js'
 const MENU = [
   { id: 'resumen', icon: 'home', label: 'Resumen' },
   { id: 'series', icon: 'film', label: 'Series' },
+  { id: 'categorias', icon: 'news', label: 'Categorías' },
   { id: 'temporadas', icon: 'play', label: 'Temporadas' },
   { id: 'capitulos', icon: 'clap', label: 'Capítulos' },
   { id: 'estrenos', icon: 'cal', label: 'Estrenos' },
 ]
 
-export default function AdminPanel({ serC, sC, eC, rC, onSite, onLogout }) {
+export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout }) {
   const [sec, setSec] = useState('resumen')
   const [open, setOpen] = useState(false)
   const [sheet, setSheet] = useState(null) // season | episode | release
@@ -28,6 +30,19 @@ export default function AdminPanel({ serC, sC, eC, rC, onSite, onLogout }) {
   const [prog, setProg] = useState('')
   const [sidSel, setSidSel] = useState('')
   const [asg, setAsg] = useState('')
+  const [catM, setCatM] = useState(null)
+  const cats = catC.items
+  const nextOrden = cats.reduce((m, c) => Math.max(m, c.orden || 0), 0) + 1
+  const moveCat = async (i, d) => {
+    const j = i + d
+    if (j < 0 || j >= cats.length) return
+    try {
+      await catC.update(cats[i].id, { orden: cats[j].orden })
+      await catC.update(cats[j].id, { orden: cats[i].orden })
+    } catch (err) {
+      alert(explain(err))
+    }
+  }
 
   const series = serC.items
   const sid = series.some((x) => x.id === sidSel) ? sidSel : series[0]?.id || ''
@@ -176,6 +191,7 @@ export default function AdminPanel({ serC, sC, eC, rC, onSite, onLogout }) {
               ))}
             </div>
             <button className="act" style={{ '--i': 4 }} onClick={() => setSerieM('new')}><Icon name="film" /> Agregar serie</button>
+            <button className="act" style={{ '--i': 4 }} onClick={() => (series.length ? setCatM('new') : alert('Primero agrega una serie.'))}><Icon name="news" /> Agregar categoría</button>
             <button className="act" style={{ '--i': 5 }} onClick={() => openSheet('season')}><Icon name="play" /> Agregar temporada</button>
             <button className="act" style={{ '--i': 6 }} onClick={() => openSheet('episode')}><Icon name="clap" /> Agregar capítulo</button>
             <button className="act" style={{ '--i': 7 }} onClick={() => openSheet('release')}><Icon name="cal" /> Agregar estreno al calendario</button>
@@ -209,6 +225,30 @@ export default function AdminPanel({ serC, sC, eC, rC, onSite, onLogout }) {
               </div>
             )) : <Empty icon="film">Aún no hay series.</Empty>}
             <button className="btn add" onClick={() => setSerieM('new')}>+ Agregar serie</button>
+          </>
+        )}
+
+        {sec === 'categorias' && (
+          <>
+            <h2>Categorías</h2>
+            <p className="note" style={{ textAlign: 'left' }}>
+              Cada categoría es una fila del Inicio. "Seguir viendo" aparece sola arriba.
+            </p>
+            {cats.length ? cats.map((c, i) => (
+              <div className="rel" key={c.id} style={{ '--i': i }}>
+                <div className="info">
+                  <b>{c.nombre}</b>
+                  <span>
+                    {(c.series || []).filter((id) => series.some((s) => s.id === id)).length} series - {c.estilo === 'grande' ? 'tamaño grande' : 'tamaño normal'}
+                  </span>
+                </div>
+                <button className="dots" aria-label="Subir" disabled={i === 0} onClick={() => moveCat(i, -1)}>↑</button>
+                <button className="dots" aria-label="Bajar" disabled={i === cats.length - 1} onClick={() => moveCat(i, 1)}>↓</button>
+                <button className="dots" aria-label="Editar categoría" onClick={() => setCatM(c)}><Icon name="edit" /></button>
+                <button className="dots" aria-label="Eliminar categoría" onClick={() => del(catC, c.id, `¿Eliminar la categoría "${c.nombre}"?`)}>×</button>
+              </div>
+            )) : <Empty icon="news">Aún no hay categorías.</Empty>}
+            <button className="btn add" onClick={() => (series.length ? setCatM('new') : alert('Primero agrega una serie.'))}>+ Agregar categoría</button>
           </>
         )}
 
@@ -286,6 +326,21 @@ export default function AdminPanel({ serC, sC, eC, rC, onSite, onLogout }) {
         )}
       </main>
 
+      {catM && (
+        <CategoriaModal
+          series={series}
+          initial={catM === 'new' ? null : catM}
+          onClose={() => setCatM(null)}
+          onSave={async (d) => {
+            try {
+              await (catM === 'new' ? catC.add({ ...d, orden: nextOrden }) : catC.update(catM.id, d))
+              setCatM(null)
+            } catch (err) {
+              alert(explain(err))
+            }
+          }}
+        />
+      )}
       {serieM && (
         <SerieModal
           initial={serieM === 'new' ? null : serieM}

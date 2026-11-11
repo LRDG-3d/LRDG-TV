@@ -4,6 +4,7 @@ import EpisodeCard from './EpisodeCard.jsx'
 import useMedia from '../hooks/useMedia.js'
 import { parseSource } from '../utils/source.js'
 import { byNumber } from '../utils/sort.js'
+import { getProgress, saveProgress, clearProgress } from '../utils/progress.js'
 
 const SPEEDS = [1, 1.25, 1.5, 2, 0.75]
 const go = (id) => {
@@ -23,6 +24,7 @@ export default function Player({ ep, eps, loaded, onBack }) {
   const root = useRef(null)
   const vid = useRef(null)
   const timer = useRef(null)
+  const lastSave = useRef(0)
   const [playing, setPlaying] = useState(false)
   const [cur, setCur] = useState(0)
   const [dur, setDur] = useState(0)
@@ -111,11 +113,29 @@ export default function Player({ ep, eps, loaded, onBack }) {
             playsInline
             preload="metadata"
             poster={ep.img || undefined}
-            onTimeUpdate={(e) => setCur(e.target.currentTime)}
-            onLoadedMetadata={(e) => setDur(e.target.duration)}
+            onTimeUpdate={(e) => {
+              const v = e.target
+              setCur(v.currentTime)
+              if (Date.now() - lastSave.current > 4000 && v.duration) {
+                lastSave.current = Date.now()
+                saveProgress(ep.id, v.currentTime, v.duration)
+              }
+            }}
+            onLoadedMetadata={(e) => {
+              const v = e.target
+              setDur(v.duration)
+              const p = getProgress()[ep.id]
+              if (p && p.pos > 5 && p.pos < v.duration - 10) v.currentTime = p.pos
+            }}
             onPlay={() => { setPlaying(true); wake() }}
-            onPause={() => setPlaying(false)}
-            onEnded={() => next && go(next.id)}
+            onPause={(e) => {
+              setPlaying(false)
+              if (e.target.duration) saveProgress(ep.id, e.target.currentTime, e.target.duration)
+            }}
+            onEnded={() => {
+              clearProgress(ep.id)
+              next && go(next.id)
+            }}
             onError={() => setErr(true)}
           />
         )}

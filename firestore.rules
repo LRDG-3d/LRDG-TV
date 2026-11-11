@@ -9,6 +9,7 @@ service cloud.firestore {
     }
 
     match /series/{id}     { allow read: if true; allow write: if esAdmin(); }
+    match /categorias/{id} { allow read: if true; allow write: if esAdmin(); }
     match /episodios/{id}  { allow read: if true; allow write: if esAdmin(); }
     match /temporadas/{id} { allow read: if true; allow write: if esAdmin(); }
     match /estrenos/{id}   { allow read: if true; allow write: if esAdmin(); }

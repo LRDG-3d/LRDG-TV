@@ -59,3 +59,9 @@ También puedes elegir una imagen de tu teléfono como miniatura.
 - Al abrir una serie, toda la página se pinta con su color.
 - Si ya tenías capítulos de antes, Admin -> Series muestra un aviso para asignarlos a una serie.
 - Publica de nuevo `firestore.rules`: ahora incluye la colección `series`.
+
+## Inicio por categorías
+- El Inicio muestra filas deslizables: "Seguir viendo" (automática), tus categorías y "Más series".
+- Admin -> Categorías: crea filas, elige sus series, el tamaño de las tarjetas y el orden (flechas).
+- "Seguir viendo" se guarda en cada dispositivo y retoma el video donde se quedó (solo videos directos .mp4).
+- Publica de nuevo `firestore.rules`: ahora incluye la colección `categorias`.
