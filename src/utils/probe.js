@@ -211,3 +211,28 @@ export async function probe(url, onUpdate = () => {}) {
   ])
   return out
 }
+
+// Carátula vertical 2:3 (400x600)
+export function fileToCover(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file)
+    const im = new Image()
+    im.onload = () => {
+      try {
+        const c = document.createElement('canvas')
+        c.width = 400
+        c.height = 600
+        const r = Math.max(400 / im.naturalWidth, 600 / im.naturalHeight)
+        const w = im.naturalWidth * r
+        const h = im.naturalHeight * r
+        c.getContext('2d').drawImage(im, (400 - w) / 2, (600 - h) / 2, w, h)
+        res(c.toDataURL('image/jpeg', 0.75))
+      } catch (e) {
+        rej(e)
+      }
+      URL.revokeObjectURL(url)
+    }
+    im.onerror = rej
+    im.src = url
+  })
+}

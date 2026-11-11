@@ -2,15 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Opción A: por correo (en minúsculas, igual que en Authentication)
-    // Opción B (más segura contra errores de escritura): por UID.
-    //   Cópialo de Authentication -> Usuarios -> columna "UID de usuario" y usa:
-    //   return request.auth != null && request.auth.uid == "TU-UID";
+    // Cambia el correo por el de tu usuario admin
     function esAdmin() {
       return request.auth != null
         && request.auth.token.email == "TU-CORREO@gmail.com";
     }
 
+    match /series/{id}     { allow read: if true; allow write: if esAdmin(); }
     match /episodios/{id}  { allow read: if true; allow write: if esAdmin(); }
     match /temporadas/{id} { allow read: if true; allow write: if esAdmin(); }
     match /estrenos/{id}   { allow read: if true; allow write: if esAdmin(); }

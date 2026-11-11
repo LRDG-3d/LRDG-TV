@@ -52,3 +52,10 @@ También puedes elegir una imagen de tu teléfono como miniatura.
 - Al agregar o editar un capítulo, el botón "Escanear URL" lee la duración y la miniatura del enlace.
 - En Admin -> Capítulos, "Escanear todos" completa la duración y la miniatura de los capítulos que no las tengan.
 - El icono de lápiz en cada capítulo permite editarlo.
+
+## Varias series
+- Admin -> Series: agrega cada serie con carátula, información y un color.
+- Temporadas, capítulos y estrenos pertenecen a una serie (se elige arriba en cada sección).
+- Al abrir una serie, toda la página se pinta con su color.
+- Si ya tenías capítulos de antes, Admin -> Series muestra un aviso para asignarlos a una serie.
+- Publica de nuevo `firestore.rules`: ahora incluye la colección `series`.

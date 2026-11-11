@@ -6,14 +6,19 @@ import { ymd, fmtDay } from '../utils/dates.js'
 const WD = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
 const byTime = (a, b) => (a.f + (a.h || '')).localeCompare(b.f + (b.h || ''))
 
-function Item({ r, i, isAdmin, onDelete }) {
+function Item({ r, i, sr, isAdmin, onDelete }) {
   const code = r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : ''
   return (
     <div className="rel" style={{ '--i': i }}>
       <div className="when">{r.h || 'Todo el día'}</div>
       <div className="info">
         <b>{r.t}</b>
-        {code && <span>{code}</span>}
+        {(code || sr) && (
+          <span>
+            {sr && <i className="sdot" style={{ background: sr.color }} />}
+            {code}{code && sr ? ' - ' : ''}{sr?.nombre}
+          </span>
+        )}
       </div>
       {isAdmin && (
         <button
@@ -28,7 +33,7 @@ function Item({ r, i, isAdmin, onDelete }) {
   )
 }
 
-export default function Calendar({ estrenos, isAdmin, onDelete, onAdd }) {
+export default function Calendar({ estrenos, seriesMap = {}, isAdmin, onDelete, onAdd }) {
   const today = ymd(new Date())
   const [tab, setTab] = useState('todas')
   const [cur, setCur] = useState(() => {
@@ -62,7 +67,7 @@ export default function Calendar({ estrenos, isAdmin, onDelete, onAdd }) {
   const daySel = sorted.filter((r) => r.f === sel)
 
   const list = (arr) =>
-    arr.map((r, i) => <Item key={r.id} r={r} i={i} isAdmin={isAdmin} onDelete={onDelete} />)
+    arr.map((r, i) => <Item key={r.id} r={r} i={i} sr={seriesMap[r.serie]} isAdmin={isAdmin} onDelete={onDelete} />)
 
   return (
     <section className="cal">

@@ -55,7 +55,7 @@ export default function Player({ ep, eps, loaded, onBack }) {
   }
 
   const src = parseSource(ep.u)
-  const sorted = [...eps].sort(byNumber)
+  const sorted = [...eps].filter((x) => x.serie === ep.serie).sort(byNumber)
   const idx = sorted.findIndex((x) => x.id === ep.id)
   const upcoming = sorted.slice(idx + 1, idx + 4)
   const next = upcoming[0]
