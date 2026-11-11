@@ -4,7 +4,6 @@ import { auth } from './firebase'
 import Icon from './components/Icon.jsx'
 import Empty from './components/Empty.jsx'
 import EpisodeCard from './components/EpisodeCard.jsx'
-import Calendar from './components/Calendar.jsx'
 import LoginModal from './components/LoginModal.jsx'
 import AdminPanel from './components/AdminPanel.jsx'
 import Player from './components/Player.jsx'
@@ -82,14 +81,6 @@ export default function App() {
   }
 
   const q = query.toLowerCase()
-  const ts = (x) => x.creado?.seconds ?? 9e9
-  const rank = {}
-  eps.forEach((e) => {
-    rank[e.serie] = Math.max(rank[e.serie] || 0, ts(e))
-  })
-  const recent = [...eps]
-    .sort((a, b) => (rank[b.serie] - rank[a.serie]) || (a.serie === b.serie ? byNumber(b, a) : 0))
-    .slice(0, 6)
   const resS = ser.filter((s) => s.nombre.toLowerCase().includes(q))
   const resE = eps.filter((e) => e.t.toLowerCase().includes(q)).sort((a, b) => byNumber(b, a))
   const card = (e, k, isNew) => (
@@ -181,13 +172,6 @@ export default function App() {
 
             {!ser.length && <Empty icon="film">Aún no hay series.</Empty>}
 
-            {recent.length > 0 && (
-              <section className="rail">
-                <h3 className="rt">Añadidos recientemente</h3>
-                {recent.map((e, k) => card(e, k, k === 0))}
-              </section>
-            )}
-            <Calendar estrenos={rC.items} seriesMap={serMap} />
           </>
         )}
 
