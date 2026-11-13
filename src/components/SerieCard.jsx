@@ -1,10 +1,12 @@
 import Icon from './Icon.jsx'
 
-export default function SerieCard({ serie, index = 0, wide = false }) {
+// size: mediano (carátula vertical) | grande | muygrande (imagen horizontal)
+export default function SerieCard({ serie, index = 0, size = 'mediano' }) {
+  const wide = size !== 'mediano'
   const img = wide ? serie.banner || serie.img : serie.img
   return (
     <button
-      className={'scard' + (wide ? ' wide' : '')}
+      className={'scard' + (wide ? ' wide' : '') + (size === 'muygrande' ? ' xl' : '')}
       style={{ '--i': index, '--c': serie.color || '#3b82f6' }}
       onClick={() => { window.location.hash = '#/serie/' + serie.id }}
     >

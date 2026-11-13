@@ -11,6 +11,8 @@ import { explain } from '../utils/errors.js'
 import { probe, formatDuration } from '../utils/probe.js'
 import { byNumber } from '../utils/sort.js'
 
+const SIZE = { normal: 'mediano', mediano: 'mediano', grande: 'grande', muygrande: 'muy grande' }
+
 const MENU = [
   { id: 'resumen', icon: 'home', label: 'Resumen' },
   { id: 'series', icon: 'film', label: 'Series' },
@@ -159,7 +161,7 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
         <div className="drawer-bg" onClick={() => setOpen(false)}>
           <aside className="drawer" onClick={(e) => e.stopPropagation()}>
             <div className="dh">
-              <div className="av"><Icon name="rose" /></div>
+              <div className="av logo"><img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="LA ROSANA TV" /></div>
               <div><b>Administrador</b><small>LA ROSANA TV</small></div>
             </div>
             {MENU.map((m, i) => (
@@ -239,7 +241,7 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
                 <div className="info">
                   <b>{c.nombre}</b>
                   <span>
-                    {(c.series || []).filter((id) => series.some((s) => s.id === id)).length} series - {c.estilo === 'grande' ? 'tamaño grande' : 'tamaño normal'}
+                    {(c.series || []).filter((id) => series.some((s) => s.id === id)).length} series - tamaño {SIZE[c.estilo] || 'mediano'}
                   </span>
                 </div>
                 <button className="dots" aria-label="Subir" disabled={i === 0} onClick={() => moveCat(i, -1)}>↑</button>

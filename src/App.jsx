@@ -123,8 +123,6 @@ export default function App() {
             serie={s}
             seasons={sC.items.filter((x) => x.serie === serieId)}
             eps={eps.filter((e) => e.serie === serieId)}
-            estrenos={rC.items.filter((r) => r.serie === serieId)}
-            seriesMap={serMap}
             onBack={() => go('inicio')}
           />
         ) : (
@@ -140,7 +138,7 @@ export default function App() {
   return (
     <>
       <header className="top">
-        <div className="av"><Icon name="rose" /></div>
+        <div className="av logo"><img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="LA ROSANA TV" /></div>
         <div className="brand">LA <b>ROSANA</b> TV</div>
         <button className="ic" aria-label="Buscar" onClick={() => go('buscar')}>
           <Icon name="search" />
@@ -160,7 +158,7 @@ export default function App() {
 
             {rows.map(({ c, list }) => (
               <Rail key={c.id} title={c.nombre}>
-                {list.map((s, i) => <SerieCard key={s.id} serie={s} index={i} wide={c.estilo === 'grande'} />)}
+                {list.map((s, i) => <SerieCard key={s.id} serie={s} index={i} size={!c.estilo || c.estilo === 'normal' ? 'mediano' : c.estilo} />)}
               </Rail>
             ))}
 

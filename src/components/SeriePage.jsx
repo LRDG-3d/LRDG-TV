@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Icon from './Icon.jsx'
 import Empty from './Empty.jsx'
 import EpisodeCard from './EpisodeCard.jsx'
-import Calendar from './Calendar.jsx'
 import { byNumber } from '../utils/sort.js'
 
 export default function SeriePage({ serie, seasons, eps, estrenos, seriesMap, onBack }) {
@@ -63,7 +62,6 @@ export default function SeriePage({ serie, seasons, eps, estrenos, seriesMap, on
           <Empty icon="clap">Esta serie aún no tiene capítulos.</Empty>
         )}
 
-        <Calendar estrenos={estrenos} seriesMap={seriesMap} />
       </main>
     </>
   )

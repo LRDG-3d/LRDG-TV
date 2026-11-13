@@ -250,3 +250,8 @@ nav button{display:flex;flex-direction:column;align-items:center;justify-content
 .check{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:15px}
 .box .check input{width:20px;height:20px;margin:0;flex:none}
 .dots:disabled{opacity:.3}
+.hrow .scard.xl{width:min(88vw,520px)}
+
+/* Logo de la página */
+.av.logo{background:none;padding:0;overflow:hidden}
+.av.logo img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}

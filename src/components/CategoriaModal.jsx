@@ -3,7 +3,7 @@ import Modal, { Actions } from './Modal.jsx'
 
 export default function CategoriaModal({ series, initial, onSave, onClose }) {
   const [nombre, setNombre] = useState(initial?.nombre ?? '')
-  const [estilo, setEstilo] = useState(initial?.estilo ?? 'normal')
+  const [estilo, setEstilo] = useState(!initial?.estilo || initial.estilo === 'normal' ? 'mediano' : initial.estilo)
   const [sel, setSel] = useState(initial?.series ?? [])
 
   const toggle = (id) => setSel((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]))
@@ -17,8 +17,9 @@ export default function CategoriaModal({ series, initial, onSave, onClose }) {
       <input placeholder="Nombre (ej. Vive grandes aventuras)" value={nombre} onChange={(e) => setNombre(e.target.value)} autoFocus={!initial} required />
       <label className="lbl">Tamaño de las tarjetas</label>
       <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
-        <option value="normal">Normal (carátulas verticales)</option>
+        <option value="mediano">Mediano (carátula vertical)</option>
         <option value="grande">Grande (imagen horizontal)</option>
+        <option value="muygrande">Muy grande (imagen horizontal ancha)</option>
       </select>
       <label className="lbl">Series de esta categoría</label>
       <div className="checks">

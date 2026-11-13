@@ -61,7 +61,7 @@ export default function SerieModal({ initial, onSave, onClose }) {
           <button type="button" className="btn g sm" onClick={() => setImg('')}>Quitar</button>
         )}
       </div>
-      <label className="lbl">Imagen horizontal (para categorías en tamaño grande, opcional)</label>
+      <label className="lbl">Imagen horizontal (para categorías en tamaño grande o muy grande, opcional)</label>
       <div className="thumbprev" style={banner ? { backgroundImage: `url("${banner}")` } : undefined}>
         {!banner && 'Sin imagen horizontal'}
       </div>
