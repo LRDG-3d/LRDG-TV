@@ -10,6 +10,7 @@ import Player from './components/Player.jsx'
 import SerieCard from './components/SerieCard.jsx'
 import SeriePage from './components/SeriePage.jsx'
 import Rail from './components/Rail.jsx'
+import Spinner from './components/Spinner.jsx'
 import ContinueCard from './components/ContinueCard.jsx'
 import useCollection from './hooks/useCollection.js'
 import useAdmin from './hooks/useAdmin.js'
@@ -33,6 +34,8 @@ export default function App() {
   const rC = useCollection('estrenos', 'f')
   const ser = serC.items
   const eps = eC.items
+  // Mientras llega el catálogo solo se muestra el aro de carga
+  const loading = !serC.loaded || !catC.loaded || !eC.loaded
   const serMap = Object.fromEntries(ser.map((s) => [s.id, s]))
 
   const user = useAdmin()
@@ -134,7 +137,7 @@ export default function App() {
           />
         ) : (
           <main className="view">
-            <Empty icon="film">{serC.loaded ? 'No se encontró esta serie.' : 'Cargando...'}</Empty>
+            {serC.loaded ? <Empty icon="film">No se encontró esta serie.</Empty> : <Spinner />}
           </main>
         )}
         {nav}
@@ -152,7 +155,7 @@ export default function App() {
       </header>
 
       <main key={view} className="view">
-        {view === 'inicio' && (
+        {view === 'inicio' && (loading ? <Spinner /> : (
           <>
             {cont.length > 0 && (
               <Rail title="Seguir viendo">
@@ -183,12 +186,12 @@ export default function App() {
             {!ser.length && <Empty icon="film">Aún no hay series.</Empty>}
 
           </>
-        )}
+        ))}
 
         {view === 'series' && (
           <>
             <h2>Series</h2>
-            {ser.length ? (
+            {!serC.loaded ? <Spinner /> : ser.length ? (
               <div className="sgrid">
                 {ser.map((s, i) => <SerieCard key={s.id} serie={s} index={i} />)}
               </div>

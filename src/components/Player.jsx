@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon.jsx'
 import EpisodeCard from './EpisodeCard.jsx'
+import Spinner from './Spinner.jsx'
 import useMedia from '../hooks/useMedia.js'
 import { parseSource } from '../utils/source.js'
 import { byNumber } from '../utils/sort.js'
@@ -50,7 +51,7 @@ export default function Player({ ep, eps, loaded, onBack }) {
       <div className="pl p">
         <div className="meta">
           <button className="rb" aria-label="Volver" onClick={onBack}><Icon name="back" /></button>
-          <p className="note">{loaded ? 'No se encontró este capítulo.' : 'Cargando...'}</p>
+          {loaded ? <p className="note">No se encontró este capítulo.</p> : <Spinner />}
         </div>
       </div>
     )

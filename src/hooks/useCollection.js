@@ -16,7 +16,10 @@ export default function useCollection(name, field = 'creado') {
         setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
         setLoaded(true)
       },
-      (err) => console.error('Firestore', name, err)
+      (err) => {
+        console.error('Firestore', name, err)
+        setLoaded(true)
+      }
     )
   }, [name, field])
 
