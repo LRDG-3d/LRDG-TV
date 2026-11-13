@@ -281,3 +281,6 @@ nav button{display:flex;flex-direction:column;align-items:center;justify-content
 
 /* Logo del encabezado */
 .wordmark{height:44px;flex:1;min-width:0;margin-left:8px;object-fit:contain;object-position:left center;animation:fade .6s}
+
+/* Categorías pequeñas: carátulas un poco más juntas */
+.hrow:has(.scard.sm){gap:8px}
