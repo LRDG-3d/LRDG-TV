@@ -40,6 +40,9 @@ const paths = {
   fwd10: <path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5" />,
   full: <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />,
   edit: <path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4" />,
+  chev: <path d="M9 5l7 7-7 7" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  check: <path d="M5 12l5 5L20 7" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   out: <path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9" />,
   eye: (

@@ -2,11 +2,11 @@ import Icon from './Icon.jsx'
 
 // size: mediano (carátula vertical) | grande | muygrande (imagen horizontal)
 export default function SerieCard({ serie, index = 0, size = 'mediano' }) {
-  const wide = size !== 'mediano'
+  const wide = size === 'grande' || size === 'muygrande'
   const img = wide ? serie.banner || serie.img : serie.img
   return (
     <button
-      className={'scard' + (wide ? ' wide' : '') + (size === 'muygrande' ? ' xl' : '')}
+      className={'scard' + (wide ? ' wide' : '') + (size === 'muygrande' ? ' xl' : '') + (size === 'pequeno' ? ' sm' : '')}
       style={{ '--i': index, '--c': serie.color || '#3b82f6' }}
       onClick={() => { window.location.hash = '#/serie/' + serie.id }}
     >

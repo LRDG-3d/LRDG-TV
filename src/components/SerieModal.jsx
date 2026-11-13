@@ -32,7 +32,7 @@ export default function SerieModal({ initial, onSave, onClose }) {
   return (
     <Modal title={initial ? 'Editar serie' : 'Agregar serie'} onClose={onClose} onSubmit={submit}>
       <input placeholder="Nombre de la serie" value={nombre} onChange={(e) => setNombre(e.target.value)} autoFocus={!initial} required />
-      <input placeholder="Canal o año (ej. Televisa - 2008)" value={extra} onChange={(e) => setExtra(e.target.value)} />
+      <input placeholder="Año de estreno o canal (ej. 2008)" value={extra} onChange={(e) => setExtra(e.target.value)} />
       <textarea placeholder="Información de la serie (sinopsis)" rows="4" value={info} onChange={(e) => setInfo(e.target.value)} />
       <label className="lbl">Color de la serie</label>
       <div className="swatches">

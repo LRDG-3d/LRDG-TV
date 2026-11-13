@@ -255,3 +255,26 @@ nav button{display:flex;flex-direction:column;align-items:center;justify-content
 /* Logo de la página */
 .av.logo{background:none;padding:0;overflow:hidden}
 .av.logo img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+
+/* Carátulas pequeñas */
+.hrow .scard.sm{width:120px}
+
+/* Página de serie estilo lista de episodios */
+.mylist{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;padding:20px;margin:6px 0 20px;border:0;border-radius:14px;background:var(--card);color:var(--tx);font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:transform .15s}
+.mylist:active{transform:scale(.97)}
+.mylist .ico{font-size:30px}
+.mylist.on .ico{color:var(--ac)}
+.stabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.stabs button{padding:16px 0;background:none;border:0;border-bottom:4px solid transparent;color:var(--mut);font-size:15px;font-weight:800;letter-spacing:.5px;font-family:inherit;cursor:pointer;transition:color .25s,border-color .25s}
+.stabs button.on{color:var(--tx);border-color:var(--ac)}
+.seasonh{display:flex;justify-content:space-between;align-items:center;width:100%;padding:18px 4px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ac);font-size:20px;font-weight:700;font-family:inherit;text-transform:uppercase;text-align:left;cursor:pointer}
+.seasonh:disabled{cursor:default}
+.seasonh .ico{font-size:22px;flex:none}
+.erow{display:flex;align-items:center;gap:16px;width:100%;padding:14px 4px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--tx);text-align:left;font-family:inherit;cursor:pointer;animation:rise .45s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0) * 50ms);transition:background .2s}
+.erow:active{background:var(--onbg)}
+.ring{position:relative;width:52px;height:52px;flex:none;border-radius:50%;background:conic-gradient(var(--ac) calc(var(--p,0) * 1%),var(--line) 0);display:grid;place-items:center}
+.ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg0)}
+.ring .ico{position:relative;font-size:22px}
+.einfo{min-width:0}
+.einfo b{display:block;font-size:17px;font-weight:500;line-height:1.35}
+.einfo span{display:block;margin-top:2px;color:var(--mut);font-size:14px;font-weight:600}

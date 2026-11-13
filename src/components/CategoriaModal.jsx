@@ -17,6 +17,7 @@ export default function CategoriaModal({ series, initial, onSave, onClose }) {
       <input placeholder="Nombre (ej. Vive grandes aventuras)" value={nombre} onChange={(e) => setNombre(e.target.value)} autoFocus={!initial} required />
       <label className="lbl">Tamaño de las tarjetas</label>
       <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
+        <option value="pequeno">Pequeño (carátula vertical chica)</option>
         <option value="mediano">Mediano (carátula vertical)</option>
         <option value="grande">Grande (imagen horizontal)</option>
         <option value="muygrande">Muy grande (imagen horizontal ancha)</option>

@@ -4,7 +4,7 @@ import EpisodeCard from './EpisodeCard.jsx'
 import useMedia from '../hooks/useMedia.js'
 import { parseSource } from '../utils/source.js'
 import { byNumber } from '../utils/sort.js'
-import { getProgress, saveProgress, clearProgress } from '../utils/progress.js'
+import { getProgress, saveProgress } from '../utils/progress.js'
 
 const SPEEDS = [1, 1.25, 1.5, 2, 0.75]
 const go = (id) => {
@@ -132,8 +132,8 @@ export default function Player({ ep, eps, loaded, onBack }) {
               setPlaying(false)
               if (e.target.duration) saveProgress(ep.id, e.target.currentTime, e.target.duration)
             }}
-            onEnded={() => {
-              clearProgress(ep.id)
+            onEnded={(e) => {
+              if (e.target.duration) saveProgress(ep.id, e.target.duration, e.target.duration)
               next && go(next.id)
             }}
             onError={() => setErr(true)}

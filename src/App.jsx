@@ -17,6 +17,7 @@ import useHash from './hooks/useHash.js'
 import useSerieTheme from './hooks/useSerieTheme.js'
 import { byNumber } from './utils/sort.js'
 import { getProgress } from './utils/progress.js'
+import { getList } from './utils/mylist.js'
 
 const NAV = [
   { id: 'inicio', icon: 'home', label: 'Inicio' },
@@ -89,6 +90,7 @@ export default function App() {
 
   // Seguir viendo (por defecto) y filas por categoría
   const prog = getProgress()
+  const mine = getList().map((id) => serMap[id]).filter(Boolean)
   const cont = Object.entries(prog)
     .map(([id, p]) => ({ ep: eps.find((e) => e.id === id), p }))
     .filter((x) => x.ep && x.p.dur && x.p.pos / x.p.dur > 0.02 && x.p.pos / x.p.dur < 0.95)
@@ -115,6 +117,10 @@ export default function App() {
 
   if (serieId) {
     const s = serMap[serieId]
+    const sameCat = ser.filter(
+      (x) => x.id !== serieId && cats.some((c) => (c.series || []).includes(serieId) && (c.series || []).includes(x.id))
+    )
+    const similar = sameCat.length ? sameCat : ser.filter((x) => x.id !== serieId)
     return (
       <>
         {s ? (
@@ -123,6 +129,7 @@ export default function App() {
             serie={s}
             seasons={sC.items.filter((x) => x.serie === serieId)}
             eps={eps.filter((e) => e.serie === serieId)}
+            similar={similar}
             onBack={() => go('inicio')}
           />
         ) : (
@@ -153,6 +160,12 @@ export default function App() {
                 {cont.map((x, i) => (
                   <ContinueCard key={x.ep.id} ep={x.ep} serie={serMap[x.ep.serie]} pct={(x.p.pos / x.p.dur) * 100} index={i} />
                 ))}
+              </Rail>
+            )}
+
+            {mine.length > 0 && (
+              <Rail title="Mi lista">
+                {mine.map((s, i) => <SerieCard key={s.id} serie={s} index={i} />)}
               </Rail>
             )}
 

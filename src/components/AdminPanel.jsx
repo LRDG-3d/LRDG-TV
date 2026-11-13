@@ -11,7 +11,7 @@ import { explain } from '../utils/errors.js'
 import { probe, formatDuration } from '../utils/probe.js'
 import { byNumber } from '../utils/sort.js'
 
-const SIZE = { normal: 'mediano', mediano: 'mediano', grande: 'grande', muygrande: 'muy grande' }
+const SIZE = { pequeno: 'pequeño', normal: 'mediano', mediano: 'mediano', grande: 'grande', muygrande: 'muy grande' }
 
 const MENU = [
   { id: 'resumen', icon: 'home', label: 'Resumen' },
