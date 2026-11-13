@@ -145,8 +145,7 @@ export default function App() {
   return (
     <>
       <header className="top">
-        <div className="av logo"><img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="LA ROSANA TV" /></div>
-        <div className="brand">LA <b>ROSANA</b> TV</div>
+        <img className="wordmark" src={`${import.meta.env.BASE_URL}logo.png`} alt="DLIM TV" />
         <button className="ic" aria-label="Buscar" onClick={() => go('buscar')}>
           <Icon name="search" />
         </button>

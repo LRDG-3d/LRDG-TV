@@ -278,3 +278,6 @@ nav button{display:flex;flex-direction:column;align-items:center;justify-content
 .einfo{min-width:0}
 .einfo b{display:block;font-size:17px;font-weight:500;line-height:1.35}
 .einfo span{display:block;margin-top:2px;color:var(--mut);font-size:14px;font-weight:600}
+
+/* Logo del encabezado */
+.wordmark{height:44px;flex:1;min-width:0;margin-left:8px;object-fit:contain;object-position:left center;animation:fade .6s}
