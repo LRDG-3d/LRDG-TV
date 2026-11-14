@@ -300,3 +300,14 @@ nav{left:0;right:0;bottom:0;width:100%;transform:none;border-radius:0;border:0;b
 nav button{border-radius:0;padding:10px 0}
 nav button.on{background:none;color:var(--ac)}
 nav button.on .nav-ico{transform:scale(1.12)}
+
+/* Carátulas rectangulares, sin borde de color y sin nombre en el menú principal */
+.cover{border:0;border-radius:0}
+.rthumb.cover{border-radius:0;border-width:0}
+.coverprev{border:0;border-radius:0}
+.hrow .scard b{display:none}
+
+/* Un poco más de margen a los lados de la pantalla */
+body{padding-left:20px;padding-right:20px}
+.hrow{margin:0 -20px;padding:0 20px 6px;scroll-padding:0 20px}
+.top{padding-left:max(20px,calc((100vw - 640px) / 2 + 20px));padding-right:max(20px,calc((100vw - 640px) / 2 + 20px))}
