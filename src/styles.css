@@ -289,3 +289,14 @@ nav button{display:flex;flex-direction:column;align-items:center;justify-content
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading{display:grid;place-items:center;min-height:55vh}
 .spin{width:44px;height:44px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--ac);animation:spin .8s linear infinite}
+
+/* Barras fijas: arriba y abajo, de lado a lado (sin efecto flotante) */
+body{padding-top:68px}
+.top{position:fixed;top:0;left:0;right:0;z-index:15;height:calc(58px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) max(14px,calc((100vw - 640px) / 2 + 14px)) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:var(--navbg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);animation:fade .4s}
+.top .ic,.top .adm{margin-left:auto}
+.top .brand + .ic,.top .brand + .adm{margin-left:0}
+.top.pub .wordmark{position:absolute;left:50%;top:calc(50% + env(safe-area-inset-top,0px) / 2);transform:translate(-50%,-50%);flex:none;height:40px;margin:0;object-position:center}
+nav{left:0;right:0;bottom:0;width:100%;transform:none;border-radius:0;border:0;border-top:1px solid var(--line);padding:0 max(8px,calc((100vw - 640px) / 2)) env(safe-area-inset-bottom,0px);z-index:15;animation:fade .4s}
+nav button{border-radius:0;padding:10px 0}
+nav button.on{background:none;color:var(--ac)}
+nav button.on .nav-ico{transform:scale(1.12)}

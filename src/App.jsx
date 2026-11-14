@@ -147,7 +147,7 @@ export default function App() {
 
   return (
     <>
-      <header className="top">
+      <header className="top pub">
         <img className="wordmark" src={`${import.meta.env.BASE_URL}logo.png`} alt="DLIM TV" />
         <button className="ic" aria-label="Buscar" onClick={() => go('buscar')}>
           <Icon name="search" />
