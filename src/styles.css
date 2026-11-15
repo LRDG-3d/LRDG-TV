@@ -322,3 +322,15 @@ body{padding-left:20px;padding-right:20px}
 /* Importar capítulos */
 .check small{display:block;color:var(--mut);font-size:12px;margin-top:2px;word-break:break-all}
 .note.bad{color:#f87171}
+
+/* Botón de descarga (verde) */
+.dl{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:22px;background:#22c55e;color:#04210f;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .15s,opacity .2s}
+.dl:active{transform:scale(.95)}
+.dl:disabled{opacity:.85;cursor:default}
+.dl.done{background:#16a34a;color:#fff}
+.dl .ico{font-size:20px}
+.dl.dlc{min-width:44px;padding:0 12px;flex:none}
+.erw{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.erw .erow{flex:1;min-width:0;border-bottom:0}
+.pbar .dlc{margin-left:auto}
+.pl.p .pbar .dlc{display:none}

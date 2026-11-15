@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Icon from './Icon.jsx'
+import DownloadButton from './DownloadButton.jsx'
 import Empty from './Empty.jsx'
 import SerieCard from './SerieCard.jsx'
 import { byNumber } from '../utils/sort.js'
@@ -69,8 +70,8 @@ export default function SeriePage({ serie, seasons, eps, similar = [], onBack })
                   const frac = p && p.dur ? Math.min(1, p.pos / p.dur) : 0
                   const m = minutesOf(e.d)
                   return (
+                    <div key={e.id} className="erw">
                     <button
-                      key={e.id}
                       className="erow"
                       style={{ '--i': k, '--p': frac * 100 }}
                       onClick={() => { window.location.hash = '#/ver/' + e.id }}
@@ -81,6 +82,8 @@ export default function SeriePage({ serie, seasons, eps, similar = [], onBack })
                         {m > 0 && <span>{m} MIN</span>}
                       </span>
                     </button>
+                    <DownloadButton ep={e} compact />
+                    </div>
                   )
                 }) : <Empty icon="clap">Sin capítulos en esta temporada.</Empty>}
               </>

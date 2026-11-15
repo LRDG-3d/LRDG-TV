@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon.jsx'
 import EpisodeCard from './EpisodeCard.jsx'
 import Spinner from './Spinner.jsx'
+import DownloadButton from './DownloadButton.jsx'
 import useMedia from '../hooks/useMedia.js'
 import { parseSource } from '../utils/source.js'
 import { byNumber } from '../utils/sort.js'
 import { getProgress, saveProgress } from '../utils/progress.js'
+import { localSrc } from '../utils/download.js'
 
 const SPEEDS = [1, 1.25, 1.5, 2, 0.75]
 const go = (id) => {
@@ -33,9 +35,15 @@ export default function Player({ ep, eps, loaded, onBack }) {
   const [fs, setFs] = useState(false)
   const [hide, setHide] = useState(false)
   const [err, setErr] = useState(false)
+  const [local, setLocal] = useState(null)
   // Horizontal (teléfono girado): panel de cristal. Vertical: ficha del capítulo.
   const land = useMedia('(orientation: landscape) and (max-height: 600px)')
   const L = land || fs
+
+  // Si el capítulo está descargado en la app, se reproduce sin internet
+  useEffect(() => {
+    if (ep?.id) localSrc(ep.id).then(setLocal)
+  }, [ep?.id])
 
   useEffect(() => {
     const onFs = () => setFs(!!document.fullscreenElement)
@@ -57,7 +65,8 @@ export default function Player({ ep, eps, loaded, onBack }) {
     )
   }
 
-  const src = parseSource(ep.u)
+  const base = parseSource(ep.u)
+  const src = local && base.type === 'video' ? { type: 'video', src: local } : base
   const sorted = [...eps].filter((x) => x.serie === ep.serie).sort(byNumber)
   const idx = sorted.findIndex((x) => x.id === ep.id)
   const upcoming = sorted.slice(idx + 1, idx + 4)
@@ -178,6 +187,7 @@ export default function Player({ ep, eps, loaded, onBack }) {
           {isVideo && ep.si > cur && (
             <button className="skip" onClick={() => { vid.current.currentTime = ep.si }}>Saltar intro</button>
           )}
+          <DownloadButton ep={ep} compact />
         </div>
 
         {isVideo && (
@@ -227,6 +237,7 @@ export default function Player({ ep, eps, loaded, onBack }) {
         <h1>{ep.t}</h1>
         <div className="sub">{code}{ep.d ? ` - ${ep.d}` : ''}</div>
         <div className="chipsrow">
+          <DownloadButton ep={ep} />
           {isVideo && <button className="chipb" onClick={cycle}>Velocidad {rate}x</button>}
           <button className="chipb" onClick={toggleFs}>Pantalla completa</button>
         </div>

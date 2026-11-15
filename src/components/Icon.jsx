@@ -43,6 +43,7 @@ const paths = {
   chev: <path d="M9 5l7 7-7 7" />,
   plus: <path d="M12 5v14M5 12h14" />,
   check: <path d="M5 12l5 5L20 7" />,
+  download: <path d="M12 4v11M7 11l5 5 5-5M5 20h14" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   out: <path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9" />,
   eye: (
