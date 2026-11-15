@@ -205,6 +205,8 @@ export async function probe(url, onUpdate = () => {}) {
     return out
   }
 
+  if (/\.zip(\?|#|$)/i.test(url)) return out
+
   await Promise.all([
     withTimeout(videoDuration(url), 12000).then((d) => d && upd({ dur: d })),
     withTimeout(videoFrame(url), 12000).then((i) => i && upd({ img: i })),

@@ -106,6 +106,38 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
 
   const epList = eps.filter((e) => fs === 'all' || Number(e.s) === Number(fs)).sort(byNumber)
 
+  const importEps = async (rows, season, onProg) => {
+    try {
+      if (!seasons.some((x) => Number(x.n) === season)) await sC.add({ n: season, nombre: '', serie: sid })
+      const have = new Set(eps.filter((e) => Number(e.s) === season).map((e) => Number(e.e)))
+      let ok = 0
+      let skip = 0
+      for (let i = 0; i < rows.length; i++) {
+        const r = rows[i]
+        onProg(`Importando ${i + 1} de ${rows.length}...`)
+        if (have.has(r.num)) {
+          skip++
+          continue
+        }
+        await eC.add({
+          t: `Capítulo ${r.num}`,
+          s: season,
+          e: r.num,
+          d: r.dur ? formatDuration(r.dur) : '',
+          u: r.url,
+          si: null,
+          img: null,
+          serie: sid,
+        })
+        ok++
+      }
+      return { ok, skip }
+    } catch (err) {
+      alert(explain(err))
+      return null
+    }
+  }
+
   const scanAll = async () => {
     const todo = epList.filter((x) => x.u && (!x.d || !x.img))
     if (!todo.length) return alert('Todos los capítulos ya tienen duración y miniatura.')
@@ -131,22 +163,7 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
     alert(`Listo: se actualizaron ${ok} de ${todo.length} capítulos.`)
   }
 
-  // Importa de una vez los capítulos que encontró en la URL
-  const importEps = async ({ season, items }, report) => {
-    try {
-      for (let i = 0; i < items.length; i++) {
-        report(`Importando ${i + 1} de ${items.length}...`)
-        const it = items[i]
-        await eC.add({ serie: sid, s: season, e: it.n, t: `Capítulo ${it.n}`, d: it.d, u: it.url, si: null, img: null })
-      }
-      setSheet(null)
-      alert(`Listo: se agregaron ${items.length} capítulos. Usa "Escanear todos" para completar duración y miniatura.`)
-    } catch (err) {
-      alert(explain(err))
-    }
-  }
-
-  const code = (r) = (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
+  const code = (r) => (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
 
   const serieBar = series.length ? (
     <select
@@ -314,8 +331,8 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
                     <button className="dots" aria-label="Eliminar capítulo" onClick={() => del(eC, e.id, '¿Eliminar este capítulo?')}>×</button>
                   </div>
                 )) : <Empty icon="clap">No hay capítulos todavía.</Empty>}
-                <button className="btn add" onClick={() => openSheet('episode')}>+ Agregar capítulo</button>
                 <button className="btn add" onClick={() => openSheet('import')}>Importar capítulos desde una URL</button>
+                <button className="btn g add" onClick={() => openSheet('episode')}>+ Agregar un capítulo</button>
                 <button className="btn g add" disabled={!!prog} onClick={scanAll}>{prog || 'Escanear todos (duración y miniatura)'}</button>
               </>
             )}
@@ -386,6 +403,14 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
           onSave={(d) => run(() => eC.add({ ...d, serie: sid }))}
         />
       )}
+      {sheet === 'import' && (
+        <ImportModal
+          seasons={seasons}
+          defaultSeason={fs !== 'all' ? Number(fs) : undefined}
+          onClose={() => setSheet(null)}
+          onImport={importEps}
+        />
+      )}
       {edit && (
         <EpisodeModal
           seasons={seasons}
@@ -393,15 +418,6 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
           initial={edit}
           onClose={() => setEdit(null)}
           onSave={(d) => run(() => eC.update(edit.id, d), () => setEdit(null))}
-        />
-      )}
-      {sheet === 'import' && (
-        <ImportModal
-          seasons={seasons}
-          episodes={eps}
-          defaultSeason={fs !== 'all' ? Number(fs) : undefined}
-          onImport={importEps}
-          onClose={() => setSheet(null)}
         />
       )}
       {sheet === 'release' && (

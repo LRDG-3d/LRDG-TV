@@ -156,9 +156,19 @@ export default function Player({ ep, eps, loaded, onBack }) {
         )}
         {(src.type === 'none' || err) && (
           <div className="pmsg">
-            {err
-              ? 'No se pudo reproducir este enlace. Usa un enlace directo (.mp4) o uno de YouTube, Vimeo o Google Drive.'
-              : 'Este capítulo aún no tiene video.'}
+            <div>
+              {err
+                ? 'No se pudo reproducir este archivo en el navegador. Los mkv a veces no son compatibles: usa mp4, o ábrelo aparte.'
+                : 'Este capítulo aún no tiene video.'}
+              {err && (
+                <>
+                  <br />
+                  <a className="skip" style={{ display: 'inline-grid', placeItems: 'center', marginTop: 14, marginLeft: 0, textDecoration: 'none' }} href={ep.u} target="_blank" rel="noopener noreferrer">
+                    Abrir el archivo
+                  </a>
+                </>
+              )}
+            </div>
           </div>
         )}
 
