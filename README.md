@@ -65,3 +65,8 @@ También puedes elegir una imagen de tu teléfono como miniatura.
 - Admin -> Categorías: crea filas, elige sus series, el tamaño de las tarjetas y el orden (flechas).
 - "Seguir viendo" se guarda en cada dispositivo y retoma el video donde se quedó (solo videos directos .mp4).
 - Publica de nuevo `firestore.rules`: ahora incluye la colección `categorias`.
+
+## App de Android (APK)
+- `capacitor.config.json` y `.github/workflows/apk.yml` compilan la página como app, sin depender de la dirección web.
+- Cada push a `main` genera el APK: Actions -> flujo "APK" -> Artifacts -> `dlim-tv-apk`.
+- La carpeta `android` se genera sola en la nube, por eso está en `.gitignore`.
