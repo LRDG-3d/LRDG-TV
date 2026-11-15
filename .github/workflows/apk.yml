@@ -21,7 +21,7 @@ jobs:
           yes | "$SDKM" --licenses > /dev/null || true
       - run: npm install
       - run: npm run build
-      - run: npx cap add android
+      - run: rm -rf android && npx cap add android
       - name: Iconos de la app
         continue-on-error: true
         run: npx --yes @capacitor/assets generate --android
