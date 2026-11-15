@@ -143,6 +143,17 @@ export default function Player({ ep, eps, loaded, onBack }) {
         {src.type === 'iframe' && (
           <iframe src={src.src} title={ep.t} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
         )}
+        {src.type === 'zip' && (
+          <div className="pmsg">
+            <div>
+              Este capítulo es un archivo ZIP y no se puede reproducir aquí.
+              <br />
+              <a className="skip" style={{ display: 'inline-grid', placeItems: 'center', marginTop: 14, marginLeft: 0, textDecoration: 'none' }} href={src.src}>
+                Descargar
+              </a>
+            </div>
+          </div>
+        )}
         {(src.type === 'none' || err) && (
           <div className="pmsg">
             {err

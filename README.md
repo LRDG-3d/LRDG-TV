@@ -70,3 +70,11 @@ También puedes elegir una imagen de tu teléfono como miniatura.
 - `capacitor.config.json` y `.github/workflows/apk.yml` compilan la página como app, sin depender de la dirección web.
 - Cada push a `main` genera el APK: Actions -> flujo "APK" -> Artifacts -> `dlim-tv-apk`.
 - La carpeta `android` se genera sola en la nube, por eso está en `.gitignore`.
+
+## Importar capítulos desde una URL
+Admin -> Capítulos -> "Importar capítulos desde una URL": pega la dirección de archive.org (por ejemplo https://archive.org/download/NOMBRE).
+- Detecta solo archivos .mp4, .mkv y .zip, y toma el número del nombre ("Capitulo 1", "Capitulo 2"...).
+- Si hay varios formatos del mismo capítulo, usa primero el original y luego mp4, mkv, zip.
+- Los capítulos que ya existen en esa temporada se omiten.
+- Después usa "Escanear todos" para completar la duración y la miniatura.
+- Los .mp4 se reproducen siempre; los .mkv dependen del navegador; los .zip solo se pueden descargar.

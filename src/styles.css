@@ -311,3 +311,10 @@ nav button.on .nav-ico{transform:scale(1.12)}
 body{padding-left:20px;padding-right:20px}
 .hrow{margin:0 -20px;padding:0 20px 6px;scroll-padding:0 20px}
 .top{padding-left:max(20px,calc((100vw - 640px) / 2 + 20px));padding-right:max(20px,calc((100vw - 640px) / 2 + 20px))}
+
+/* Importar capítulos */
+.imp{max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:14px;margin:10px 0;padding:4px 12px}
+.imp div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;font-size:13px;border-bottom:1px solid var(--line)}
+.imp div:last-child{border:0}
+.imp span{color:var(--mut)}
+.imp .dup{opacity:.5}

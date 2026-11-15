@@ -6,6 +6,7 @@ import CategoriaModal from './CategoriaModal.jsx'
 import SeasonModal from './SeasonModal.jsx'
 import EpisodeModal from './EpisodeModal.jsx'
 import ReleaseModal from './ReleaseModal.jsx'
+import ImportModal from './ImportModal.jsx'
 import { fmtDay } from '../utils/dates.js'
 import { explain } from '../utils/errors.js'
 import { probe, formatDuration } from '../utils/probe.js'
@@ -130,7 +131,22 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
     alert(`Listo: se actualizaron ${ok} de ${todo.length} capítulos.`)
   }
 
-  const code = (r) => (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
+  // Importa de una vez los capítulos que encontró en la URL
+  const importEps = async ({ season, items }, report) => {
+    try {
+      for (let i = 0; i < items.length; i++) {
+        report(`Importando ${i + 1} de ${items.length}...`)
+        const it = items[i]
+        await eC.add({ serie: sid, s: season, e: it.n, t: `Capítulo ${it.n}`, d: it.d, u: it.url, si: null, img: null })
+      }
+      setSheet(null)
+      alert(`Listo: se agregaron ${items.length} capítulos. Usa "Escanear todos" para completar duración y miniatura.`)
+    } catch (err) {
+      alert(explain(err))
+    }
+  }
+
+  const code = (r) = (r.s ? `T${r.s}${r.e ? 'E' + String(r.e).padStart(2, '0') : ''}` : '--')
 
   const serieBar = series.length ? (
     <select
@@ -299,6 +315,7 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
                   </div>
                 )) : <Empty icon="clap">No hay capítulos todavía.</Empty>}
                 <button className="btn add" onClick={() => openSheet('episode')}>+ Agregar capítulo</button>
+                <button className="btn add" onClick={() => openSheet('import')}>Importar capítulos desde una URL</button>
                 <button className="btn g add" disabled={!!prog} onClick={scanAll}>{prog || 'Escanear todos (duración y miniatura)'}</button>
               </>
             )}
@@ -376,6 +393,15 @@ export default function AdminPanel({ serC, catC, sC, eC, rC, onSite, onLogout })
           initial={edit}
           onClose={() => setEdit(null)}
           onSave={(d) => run(() => eC.update(edit.id, d), () => setEdit(null))}
+        />
+      )}
+      {sheet === 'import' && (
+        <ImportModal
+          seasons={seasons}
+          episodes={eps}
+          defaultSeason={fs !== 'all' ? Number(fs) : undefined}
+          onImport={importEps}
+          onClose={() => setSheet(null)}
         />
       )}
       {sheet === 'release' && (

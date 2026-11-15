@@ -7,5 +7,6 @@ export function parseSource(url) {
   if (vm) return { type: 'iframe', src: `https://player.vimeo.com/video/${vm[1]}` }
   const dr = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)
   if (dr) return { type: 'iframe', src: `https://drive.google.com/file/d/${dr[1]}/preview` }
+  if (/\.zip(\?|$)/i.test(url)) return { type: 'zip', src: url }
   return { type: 'video', src: url }
 }
