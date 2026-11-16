@@ -1,17 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Cambia el correo por el de tu usuario admin
-    function esAdmin() {
-      return request.auth != null
-        && request.auth.token.email == "TU-CORREO@gmail.com";
+    match /producciones/{id} {
+      allow read: if true;
+      // Cambia TU_UID por el UID de tu usuario (Authentication → Users)
+      allow write: if request.auth != null && request.auth.uid == 'TU_UID';
     }
-
-    match /series/{id}     { allow read: if true; allow write: if esAdmin(); }
-    match /categorias/{id} { allow read: if true; allow write: if esAdmin(); }
-    match /episodios/{id}  { allow read: if true; allow write: if esAdmin(); }
-    match /temporadas/{id} { allow read: if true; allow write: if esAdmin(); }
-    match /estrenos/{id}   { allow read: if true; allow write: if esAdmin(); }
   }
 }

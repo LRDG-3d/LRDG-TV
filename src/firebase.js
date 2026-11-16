@@ -1,18 +1,11 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { firebaseConfig } from './firebaseConfig.js'
 
-// La configuración web de Firebase no es secreta:
-// la seguridad la dan las reglas de Firestore (ver firestore.rules).
-const app = initializeApp({
-  apiKey: 'AIzaSyDEzx6v04WeKiNeiVzincd8zrnSvIedjR0',
-  authDomain: 'lrdg-tv.firebaseapp.com',
-  projectId: 'lrdg-tv',
-  storageBucket: 'lrdg-tv.firebasestorage.app',
-  messagingSenderId: '661558065374',
-  appId: '1:661558065374:web:6b23c1be694e8613786a4f',
-})
+// Si aún no pegaste tu configuración, el sitio funciona solo con catalogo.js.
+export const firebaseListo = !String(firebaseConfig.apiKey).startsWith('PEGA')
+const app = firebaseListo ? initializeApp(firebaseConfig) : null
 
-export const API_KEY = 'AIzaSyDEzx6v04WeKiNeiVzincd8zrnSvIedjR0'
-export const auth = getAuth(app)
-export const db = getFirestore(app)
+export const auth = app ? getAuth(app) : null
+export const db = app ? getFirestore(app) : null

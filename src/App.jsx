@@ -1,230 +1,105 @@
-import { useState } from 'react'
-import { signOut } from 'firebase/auth'
-import { auth } from './firebase'
-import Icon from './components/Icon.jsx'
-import Empty from './components/Empty.jsx'
-import EpisodeCard from './components/EpisodeCard.jsx'
-import LoginModal from './components/LoginModal.jsx'
-import AdminPanel from './components/AdminPanel.jsx'
-import Player from './components/Player.jsx'
-import SerieCard from './components/SerieCard.jsx'
-import SeriePage from './components/SeriePage.jsx'
-import Rail from './components/Rail.jsx'
-import Spinner from './components/Spinner.jsx'
-import ContinueCard from './components/ContinueCard.jsx'
-import useCollection from './hooks/useCollection.js'
-import useAdmin from './hooks/useAdmin.js'
-import useHash from './hooks/useHash.js'
-import useSerieTheme from './hooks/useSerieTheme.js'
-import { byNumber } from './utils/sort.js'
-import { getProgress } from './utils/progress.js'
-import { getList } from './utils/mylist.js'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useProducciones } from './hooks/useProducciones.js'
+import Admin from './components/Admin.jsx'
+import Header from './components/Header.jsx'
+import Card from './components/Card.jsx'
+import Detail from './components/Detail.jsx'
 
-const NAV = [
-  { id: 'inicio', icon: 'home', label: 'Inicio' },
-  { id: 'buscar', icon: 'search', label: 'Buscar' },
-  { id: 'series', icon: 'play', label: 'Series' },
-]
+const idDe = (hash) => {
+  const m = hash.match(/^#\/produccion\/(.+)$/)
+  return m ? decodeURIComponent(m[1]) : null
+}
 
 export default function App() {
-  const serC = useCollection('series')
-  const catC = useCollection('categorias', 'orden')
-  const eC = useCollection('episodios')
-  const sC = useCollection('temporadas', 'n')
-  const rC = useCollection('estrenos', 'f')
-  const ser = serC.items
-  const eps = eC.items
-  // Mientras llega el catálogo solo se muestra el aro de carga
-  const loading = !serC.loaded || !catC.loaded || !eC.loaded
-  const serMap = Object.fromEntries(ser.map((s) => [s.id, s]))
+  const { producciones, remotas, cargando } = useProducciones()
+  const [hash, setHash] = useState(window.location.hash)
+  const id = idDe(hash)
+  const esAdmin = hash.startsWith('#/admin')
+  const [categoria, setCategoria] = useState('')
+  const scrollGuardado = useRef(0)
 
-  const user = useAdmin()
-  const hash = useHash()
-  const [view, setView] = useState('inicio')
-  const [query, setQuery] = useState('')
+  // Navegación por hash: funciona en GitHub Pages sin servidor y sin recargar.
+  useEffect(() => {
+    const alCambiar = () => setHash(window.location.hash)
+    window.addEventListener('hashchange', alCambiar)
+    return () => window.removeEventListener('hashchange', alCambiar)
+  }, [])
 
-  // Rutas: #/admin, #/serie/<id>, #/ver/<id>
-  const adminRoute = hash === '#/admin'
-  const loginOpen = adminRoute && user === null
-  const serieId = hash.startsWith('#/serie/') ? hash.slice(8) : null
-  const verId = hash.startsWith('#/ver/') ? hash.slice(6) : null
-  const verEp = verId ? eps.find((e) => e.id === verId) : null
+  useEffect(() => {
+    window.scrollTo(0, id ? 0 : scrollGuardado.current)
+  }, [hash]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // La página se pinta con el color de la serie que se está viendo
-  const activeSerie = serieId ? serMap[serieId] : verEp ? serMap[verEp.serie] : null
-  useSerieTheme(activeSerie?.color)
-
-  const leave = () => {
-    window.location.hash = '#/'
+  const abrir = (nuevo) => {
+    if (!id) scrollGuardado.current = window.scrollY
+    window.location.hash = `/produccion/${encodeURIComponent(nuevo)}`
   }
+  const volver = () => { window.location.hash = '/' }
 
-  if (adminRoute && user) {
-    return (
-      <AdminPanel serC={serC} catC={catC} sC={sC} eC={eC} rC={rC} onSite={leave} onLogout={() => signOut(auth).then(leave)} />
-    )
-  }
-
-  if (verId) {
-    return (
-      <Player
-        key={verId}
-        ep={verEp}
-        eps={eps}
-        loaded={eC.loaded}
-        onBack={() => {
-          window.location.hash = verEp?.serie ? '#/serie/' + verEp.serie : '#/'
-        }}
-      />
-    )
-  }
-
-  const go = (id) => {
-    setView(id)
-    if (serieId) leave()
-    window.scrollTo(0, 0)
-  }
-
-  const q = query.toLowerCase()
-  const resS = ser.filter((s) => s.nombre.toLowerCase().includes(q))
-  const resE = eps.filter((e) => e.t.toLowerCase().includes(q)).sort((a, b) => byNumber(b, a))
-  const card = (e, k, isNew) => (
-    <EpisodeCard key={e.id} ep={e} index={k} isNew={isNew} label={serMap[e.serie]?.nombre} />
+  const lista = useMemo(
+    () =>
+      producciones
+        .filter((p) => !categoria || p.categoria === categoria)
+        .sort((a, b) => a.anio - b.anio || a.titulo.localeCompare(b.titulo, 'es')),
+    [categoria, producciones]
   )
 
-  // Seguir viendo (por defecto) y filas por categoría
-  const prog = getProgress()
-  const mine = getList().map((id) => serMap[id]).filter(Boolean)
-  const cont = Object.entries(prog)
-    .map(([id, p]) => ({ ep: eps.find((e) => e.id === id), p }))
-    .filter((x) => x.ep && x.p.dur && x.p.pos / x.p.dur > 0.02 && x.p.pos / x.p.dur < 0.95)
-    .sort((a, b) => b.p.t - a.p.t)
-    .slice(0, 10)
-  const cats = catC.items
-  const inCat = new Set(cats.flatMap((c) => c.series || []))
-  const rows = cats
-    .map((c) => ({ c, list: (c.series || []).map((id) => serMap[id]).filter(Boolean) }))
-    .filter((r) => r.list.length)
-  const rest = ser.filter((s) => !inCat.has(s.id))
-  const navActive = serieId ? 'series' : view
-
-  const nav = (
-    <nav>
-      {NAV.map((n) => (
-        <button key={n.id} className={navActive === n.id ? 'on' : ''} aria-label={n.label} onClick={() => go(n.id)}>
-          <Icon name={n.icon} className="nav-ico" />
-          <span>{n.label}</span>
-        </button>
-      ))}
-    </nav>
-  )
-
-  if (serieId) {
-    const s = serMap[serieId]
-    const sameCat = ser.filter(
-      (x) => x.id !== serieId && cats.some((c) => (c.series || []).includes(serieId) && (c.series || []).includes(x.id))
-    )
-    const similar = sameCat.length ? sameCat : ser.filter((x) => x.id !== serieId)
-    return (
-      <>
-        {s ? (
-          <SeriePage
-            key={serieId}
-            serie={s}
-            seasons={sC.items.filter((x) => x.serie === serieId)}
-            eps={eps.filter((e) => e.serie === serieId)}
-            similar={similar}
-            onBack={() => go('inicio')}
-          />
-        ) : (
-          <main className="view">
-            {serC.loaded ? <Empty icon="film">No se encontró esta serie.</Empty> : <Spinner />}
-          </main>
-        )}
-        {nav}
-      </>
-    )
-  }
+  const anios = [...new Set(lista.map((p) => p.anio))]
+  const actual = id ? producciones.find((p) => p.id === id) : null
 
   return (
     <>
-      <header className="top pub">
-        <img className="wordmark" src={`${import.meta.env.BASE_URL}logo.png`} alt="DLIM TV" />
-        <button className="ic" aria-label="Buscar" onClick={() => go('buscar')}>
-          <Icon name="search" />
-        </button>
-      </header>
+      <Header
+        categoria={categoria}
+        onCategoria={(c) => { setCategoria(c); if (id) volver() }}
+        onInicio={() => setCategoria('')}
+      />
 
-      <main key={view} className="view">
-        {view === 'inicio' && (loading ? <Spinner /> : (
+      <main className="main">
+        {esAdmin ? (
+          <Admin remotas={remotas} />
+        ) : id ? (
+          actual ? (
+            <Detail
+              produccion={actual}
+              relacionadas={producciones.filter((p) => p.categoria === actual.categoria && p.id !== actual.id).slice(0, 12)}
+              onVolver={volver}
+              onAbrir={abrir}
+            />
+          ) : cargando ? (
+            <div className="empty"><p>Cargando…</p></div>
+          ) : (
+            <div className="empty">
+              <h2>No encontramos esa producción</h2>
+              <button className="back" onClick={volver}>Volver al catálogo</button>
+            </div>
+          )
+        ) : (
           <>
-            {cont.length > 0 && (
-              <Rail title="Seguir viendo">
-                {cont.map((x, i) => (
-                  <ContinueCard key={x.ep.id} ep={x.ep} serie={serMap[x.ep.serie]} pct={(x.p.pos / x.p.dur) * 100} index={i} />
-                ))}
-              </Rail>
-            )}
+            <section className="hero">
+              <h1>DLIM TV</h1>
+              <p>Tu catálogo de series y telenovelas.</p>
+            </section>
 
-            {mine.length > 0 && (
-              <Rail title="Mi lista">
-                {mine.map((s, i) => <SerieCard key={s.id} serie={s} index={i} />)}
-              </Rail>
-            )}
-
-            {rows.map(({ c, list }) => (
-              <Rail key={c.id} title={c.nombre}>
-                {list.map((s, i) => <SerieCard key={s.id} serie={s} index={i} size={!c.estilo || c.estilo === 'normal' ? 'mediano' : c.estilo} />)}
-              </Rail>
-            ))}
-
-            {rest.length > 0 && (
-              <Rail title={rows.length ? 'Más series' : 'Series'}>
-                {rest.map((s, i) => <SerieCard key={s.id} serie={s} index={i} />)}
-              </Rail>
-            )}
-
-            {!ser.length && <Empty icon="film">Aún no hay series.</Empty>}
-
-          </>
-        ))}
-
-        {view === 'series' && (
-          <>
-            <h2>Series</h2>
-            {!serC.loaded ? <Spinner /> : ser.length ? (
-              <div className="sgrid">
-                {ser.map((s, i) => <SerieCard key={s.id} serie={s} index={i} />)}
+            {lista.length === 0 ? (
+              <div className="empty">
+                <h2>Aún no hay producciones</h2>
+                <p>Agrégalas en src/data/catalogo.js y aparecerán aquí.</p>
               </div>
             ) : (
-              <Empty icon="film">Aún no hay series.</Empty>
+              anios.map((a) => (
+                <section key={a} className="year">
+                  <h2>{a}</h2>
+                  <div className="grid">
+                    {lista.filter((p) => p.anio === a).map((p) => <Card key={p.id} produccion={p} onAbrir={abrir} />)}
+                  </div>
+                </section>
+              ))
             )}
-          </>
-        )}
-
-        {view === 'buscar' && (
-          <>
-            <h2>Buscar</h2>
-            <input
-              id="q"
-              autoFocus
-              placeholder="Buscar series y capítulos..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              style={{ marginBottom: 16 }}
-            />
-            {resS.length > 0 && (
-              <div className="sgrid" style={{ marginBottom: 16 }}>
-                {resS.map((s, i) => <SerieCard key={s.id} serie={s} index={i} />)}
-              </div>
-            )}
-            {query && resE.map((e, k) => card(e, k, false))}
-            {query && !resS.length && !resE.length && <Empty icon="search">No se encontró nada.</Empty>}
           </>
         )}
       </main>
 
-      {nav}
-      {loginOpen && <LoginModal onClose={leave} />}
+      <footer className="footer">DLIM TV · Catálogo informativo. Los datos desconocidos se indican como tales.</footer>
     </>
   )
 }
